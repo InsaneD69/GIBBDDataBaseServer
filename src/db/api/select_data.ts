@@ -40,7 +40,7 @@ export async function dbgetInfoAboulAllCamera(){
     return response;
 }
 
-export async function dbgetInfoAboutCarVIN(body: RequestCar){
+export async function dbgetInfoAboutCarVIN(vin: string){
 
     console.log("Im in reqtodb")
     const sequelize = new Sequelize(dbconnectionAdmin);
@@ -48,12 +48,12 @@ export async function dbgetInfoAboutCarVIN(body: RequestCar){
     const response: importantInfoAboutCar[] = await sequelize.query(
         'SELECT  car.vin, car.driver_license,car.mark_and_model,'+
         'car.color,car.car_type,car.category,car.engine_info,car.sts_num,car.pts_num,'+
-        'person_name,person.surname,person.patronymic,'+
-        'gosnumber.gosnumder,gosnumber.region_code '+ 
+        'person.person_name,person.surname,person.patronymic,'+
+        'gosnumber.number,gosnumber.region_code '+ 
         ' FROM car'+
         ' join gosnumber on gosnumber.vin = car.vin'+
         ' join person on person.driver_license = car.driver_license'+
-        ' WHERE car.vin = '+body.body.vin,{
+        ' WHERE car.vin = \''+vin+"\'",{
             type: QueryTypes.SELECT
         }
 
@@ -63,7 +63,7 @@ export async function dbgetInfoAboutCarVIN(body: RequestCar){
 
     return response;
 }
-export async function dbgetInfoAboutCarGOSNUMBER(body: RequestCar){
+export async function dbgetInfoAboutCarGOSNUMBER(number: string, region_code: number){
 
     console.log("Im in reqtodb")
     const sequelize = new Sequelize(dbconnectionAdmin);
@@ -72,12 +72,12 @@ export async function dbgetInfoAboutCarGOSNUMBER(body: RequestCar){
         'SELECT  car.vin, car.driver_license,car.mark_and_model,'+
         'car.color,car.car_type,car.category,car.engine_info,car.sts_num,car.pts_num,'+
         'person_name,person.surname,person.patronymic,'+
-        'gosnumber.gosnumder,gosnumber.region_code '+ 
+        'gosnumber.number,gosnumber.region_code '+ 
         ' FROM car'+
         ' join gosnumber on gosnumber.vin = car.vin'+
         ' join person on person.driver_license = car.driver_license'+
-        ' WHERE gosnumber.gosnumber = '+body.body.gosnumber +
-        ' AND gosnumber.region_code = '+body.body.region_code,{
+        ' WHERE gosnumber.number = \''+number+"\'" +
+        ' AND gosnumber.region_code = \''+region_code+"\'",{
             type: QueryTypes.SELECT
         }
 
@@ -98,8 +98,8 @@ export async function dbgetInfoAboutCar_userVIN(vin: string){
         'SELECT person_name,person.surname,person.patronymic,'+ 
         ' car_user.license_number'+
         ' FROM car_user'+
-        ' join person on person.driver_license = car_user.license_number'+
-        'WHERE car_user.vin = '+vin,{
+        ' join person on person.driver_license = car_user.license_number '+
+        'WHERE car_user.vin = \''+vin+'\'',{
             type: QueryTypes.SELECT
         }
 

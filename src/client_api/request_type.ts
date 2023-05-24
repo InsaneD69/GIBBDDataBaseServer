@@ -1,11 +1,11 @@
 import { FastifyRequest } from "fastify";
 
-//name
+
 export type RequestCar = FastifyRequest<{
-	Body: {
-        vin?: string | undefined;
-        gosnumber?: string | undefined;
-        region_code?: number| undefined;
+	Querystring: {
+        vin: string | undefined;
+        number: string | undefined;
+        region_code: number | undefined;
     };
 }>;
 
