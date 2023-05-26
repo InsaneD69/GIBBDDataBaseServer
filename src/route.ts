@@ -8,7 +8,7 @@ const Router = async (app: FastifyInstance) => {
 	app.get("/article",articleController.handleGetArticle);
 	app.get("/camera",articleController.handleGetAllInfoAboutCamera);
 	app.get("/car",articleController.handleGetUnfoAdboutCar);
-	
+	app.get("/person",articleController.handleGetInfoAboutPerson);
 
     // app.get(
 	// 	"/get/:id",

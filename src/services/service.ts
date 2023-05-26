@@ -1,7 +1,7 @@
 
-import { article, importantInfoAboutCar_plus_car_user } from './models';
-import { TESTgetAllFromArticle, dbgetInfoAboulAllCamera, dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN } from '../db/api/select_data'
-import { camera, car_user, importantInfoAboutCar } from '../db/api/models/db_models';
+import { article, importantInfoAboutCar_plus_car_user, person } from './models';
+import { TESTgetAllFromArticle, dbgetInfoAboulAllCamera, dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutPerson } from '../db/api/select_data'
+import { camera, car_user, importantInfoAboutCar, infoAboutPerson } from '../db/api/models/db_models';
 import { RequestCar } from '../client_api/request_type';
 
 
@@ -28,9 +28,6 @@ export const getArticles = async (): Promise<article[]> => {
 export const getAllInfoAboutCamera = async (): Promise<any> => {
 	console.log("Im in service");
 	const response: camera[] = await dbgetInfoAboulAllCamera();
-
-	console.log(response[0].area_name);
-
 
 	return response
 }
@@ -60,6 +57,22 @@ export const getInfoAboutCar = async (vin: string | undefined, number: string | 
 
 	return response
 }
+export const getInfoAboutPerson = async (passport_number:string | undefined, driver_license: string | undefined ): Promise<any> => {
+	console.log("Im in service");
+
+	let response_person: infoAboutPerson[];
+
+	if (passport_number === undefined && driver_license !== undefined) {
+		response_person = await dbgetInfoAboutPerson(driver_license,"driver_license");
+	} else if (passport_number !== undefined && driver_license === undefined) {
+		response_person = await dbgetInfoAboutPerson(passport_number,"passport_number");
+	} else { return "No" }
+
+
+	const response: person = response_person[0];
+
+	return response
+}
 
 // export const createArticle = async (body: ArticleAttributes): Promise<ArticleAttributes> => {
 // 	const response: ArticleAttributes = await ArticleModel.create(body)
@@ -79,7 +92,8 @@ export const getInfoAboutCar = async (vin: string | undefined, number: string | 
 export default {
 	getArticles,
 	getAllInfoAboutCamera,
-	getInfoAboutCar
+	getInfoAboutCar,
+	getInfoAboutPerson
 	// getOneArticle,
 	// createArticle,
 	// updateArticle,

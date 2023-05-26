@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { importantInfoAboutCar } from "../db/api/models/db_models";
 import { service } from "../services";
-import { RequestCar } from "./request_type";
+import { RequestCar, RequestPerson } from "./request_type";
 import { Body } from "@nestjs/common";
 import { importantInfoAboutCar_plus_car_user } from "../services/models";
 
@@ -20,18 +20,39 @@ export const handleGetAllInfoAboutCamera = () => {
 }
 
 export const handleGetUnfoAdboutCar = async (req:  RequestCar , reply: FastifyReply) => {
-	console.log("Im in controller")
-	
-	console.log(req.query.vin)
-    console.log(req.query.number)
-	console.log(req.query.region_code)
+
 	const vin: string | undefined = req.query.vin
 	const number: string| undefined = req.query.number
 	const region_code: number| undefined = req.query.region_code
 
 	
-	
 	const response  = service.getInfoAboutCar(vin,number,region_code)
+
+	if(await response == "No"){
+		reply = reply.code(400).send({
+			problem: "Need correct request"
+		})
+		return  reply
+
+	} else{
+	
+	return  response;
+	}
+ 
+	
+}
+
+
+export const handleGetInfoAboutPerson = async (req:  RequestPerson , reply: FastifyReply) => {
+	
+	
+	const passport_number: string | undefined = req.query.passport_number
+	const driver_license: string| undefined = req.query.driver_license
+
+	console.log(passport_number)
+	
+	
+	const response  = service.getInfoAboutPerson(passport_number,driver_license)
 
 	if(await response == "No"){
 		reply = reply.code(400).send({
@@ -49,7 +70,8 @@ export const handleGetUnfoAdboutCar = async (req:  RequestCar , reply: FastifyRe
 export default {
 	handleGetArticle,
 	handleGetAllInfoAboutCamera,
-	handleGetUnfoAdboutCar
+	handleGetUnfoAdboutCar,
+	handleGetInfoAboutPerson
 
 }
 // }

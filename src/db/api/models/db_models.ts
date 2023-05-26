@@ -45,3 +45,18 @@ export type car_user = {
 }
 
 
+export type infoAboutPerson = {
+    
+    passport_number : string,
+    driver_license: number,
+    date_of_issue: Date,
+    phone_number: string,
+    job_info: string,
+    person_name: string,
+    surname: string,
+    patronymic: string,
+
+    date_of_birth: Date,
+    place_of_registr: string
+
+}

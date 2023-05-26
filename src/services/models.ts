@@ -25,3 +25,17 @@ export type importantInfoAboutCar_plus_car_user = {
     car: importantInfoAboutCar,
     car_users: car_user[]
 }
+export type person = {
+    
+    passport_number : string,
+    driver_license: number,
+    date_of_issue: Date,
+    phone_number: string,
+    job_info: string,
+    person_name: string,
+    surname: string,
+    patronymic: string,
+
+    date_of_birth: Date,
+    place_of_registr: string
+}

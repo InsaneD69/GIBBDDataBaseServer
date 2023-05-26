@@ -9,6 +9,13 @@ export type RequestCar = FastifyRequest<{
     };
 }>;
 
+export type RequestPerson = FastifyRequest<{
+	Querystring: {
+        passport_number: string | undefined;
+        driver_license: string | undefined;
+    };
+}>;
+
 
 // export type RequestWithIdArticle = FastifyRequest<{
 // 	Params: { id: string };

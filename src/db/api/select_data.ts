@@ -1,7 +1,7 @@
 
-import {dbconnectionAdmin} from '../connect'
+import {dbconnectionAdmin, dbconnectionPoliceman} from '../connect'
 import { QueryTypes, Sequelize } from 'sequelize';
-import {area, article, camera, car_user, importantInfoAboutCar} from "./models/db_models"
+import {area, article, camera, car_user, importantInfoAboutCar, infoAboutPerson} from "./models/db_models"
 import { RequestCar } from '../../client_api/request_type';
 
 
@@ -46,13 +46,14 @@ export async function dbgetInfoAboutCarVIN(vin: string){
     const sequelize = new Sequelize(dbconnectionAdmin);
     
     const response: importantInfoAboutCar[] = await sequelize.query(
-        'SELECT  car.vin, car.driver_license,car.mark_and_model,'+
+        'SELECT  car.vin, person.driver_license,car.mark_and_model,'+
         'car.color,car.car_type,car.category,car.engine_info,car.sts_num,car.pts_num,'+
         'person.person_name,person.surname,person.patronymic,'+
         'gosnumber.number,gosnumber.region_code '+ 
         ' FROM car'+
         ' join gosnumber on gosnumber.vin = car.vin'+
-        ' join person on person.driver_license = car.driver_license'+
+        ' join sts on car.sts_num = sts.sts_id'+
+        ' join person on person.passport_number = sts.passport_number'+
         ' WHERE car.vin = \''+vin+"\'",{
             type: QueryTypes.SELECT
         }
@@ -66,7 +67,7 @@ export async function dbgetInfoAboutCarVIN(vin: string){
 export async function dbgetInfoAboutCarGOSNUMBER(number: string, region_code: number){
 
     console.log("Im in reqtodb")
-    const sequelize = new Sequelize(dbconnectionAdmin);
+    const sequelize = new Sequelize(dbconnectionPoliceman);
     
     const response: importantInfoAboutCar[] = await sequelize.query(
         'SELECT  car.vin, car.driver_license,car.mark_and_model,'+
@@ -75,7 +76,8 @@ export async function dbgetInfoAboutCarGOSNUMBER(number: string, region_code: nu
         'gosnumber.number,gosnumber.region_code '+ 
         ' FROM car'+
         ' join gosnumber on gosnumber.vin = car.vin'+
-        ' join person on person.driver_license = car.driver_license'+
+        ' join sts on car.sts_num = sts.sts_id'+
+        ' join person on person.passport_number = sts.passport_number'+
         ' WHERE gosnumber.number = \''+number+"\'" +
         ' AND gosnumber.region_code = \''+region_code+"\'",{
             type: QueryTypes.SELECT
@@ -92,10 +94,10 @@ export async function dbgetInfoAboutCarGOSNUMBER(number: string, region_code: nu
 export async function dbgetInfoAboutCar_userVIN(vin: string){
 
     console.log("Im in reqtodb")
-    const sequelize = new Sequelize(dbconnectionAdmin);
+    const sequelize = new Sequelize(dbconnectionPoliceman);
     
     const response: car_user[] = await sequelize.query(
-        'SELECT person_name,person.surname,person.patronymic,'+ 
+        'SELECT person.person_name,person.surname,person.patronymic,'+ 
         ' car_user.license_number'+
         ' FROM car_user'+
         ' join person on person.driver_license = car_user.license_number '+
@@ -110,6 +112,29 @@ export async function dbgetInfoAboutCar_userVIN(vin: string){
     return response;
 }
  
+
+export async function dbgetInfoAboutPerson(findVar: string, whoIs: "passport_number" | "driver_license"){
+
+    console.log("Im in reqtodb")
+    const sequelize = new Sequelize(dbconnectionPoliceman);
+    
+    const response: infoAboutPerson[] = await sequelize.query(
+        'SELECT person.passport_number ,person.driver_license,driver_license.date_of_issue,' +
+        ' person.phone_number,person.job_info,person.person_name,person.surname,' +
+        ' person.patronymic,passport.date_of_birth,passport.place_of_registr'+
+        ' FROM person'+
+        ' join passport using(passport_number) '+
+        ' join driver_license on person.driver_license = driver_license.license_number  '+
+        'WHERE person.'+whoIs+' = \''+findVar+'\'',{
+            type: QueryTypes.SELECT
+        }
+
+    )
+
+    console.log(response)
+
+    return response;
+}
  
 
 // export {TESTgetAllFromArticle};
