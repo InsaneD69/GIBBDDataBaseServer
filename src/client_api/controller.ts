@@ -1,9 +1,12 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply} from "fastify";
 import { importantInfoAboutCar } from "../db/api/models/db_models";
 import { service } from "../services";
-import { RequestCar, RequestPerson } from "./request_type";
+import { RequestCar, RequestPerson, RequestToken } from "./request_type";
 import { Body } from "@nestjs/common";
 import { importantInfoAboutCar_plus_car_user } from "../services/models";
+import fastify from "../app";
+import { info_current_user } from "../route";
+
 
 
 export const handleGetArticle = () => {
@@ -16,6 +19,7 @@ export const handleGetAllInfoAboutCamera = () => {
 	console.log("Im in controller")
 	
 	return  service.getAllInfoAboutCamera() 
+
 	
 }
 
@@ -24,7 +28,9 @@ export const handleGetUnfoAdboutCar = async (req:  RequestCar , reply: FastifyRe
 	const vin: string | undefined = req.query.vin
 	const number: string| undefined = req.query.number
 	const region_code: number| undefined = req.query.region_code
-
+	console.log(info_current_user)
+	
+	
 	
 	const response  = service.getInfoAboutCar(vin,number,region_code)
 
@@ -67,11 +73,17 @@ export const handleGetInfoAboutPerson = async (req:  RequestPerson , reply: Fast
  
 	
 }
+
+
+
+
+
 export default {
 	handleGetArticle,
 	handleGetAllInfoAboutCamera,
 	handleGetUnfoAdboutCar,
-	handleGetInfoAboutPerson
+	handleGetInfoAboutPerson,
+	
 
 }
 // }

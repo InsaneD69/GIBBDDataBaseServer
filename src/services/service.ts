@@ -35,8 +35,9 @@ export const getAllInfoAboutCamera = async (): Promise<any> => {
 export const getInfoAboutCar = async (vin: string | undefined, number: string | undefined, region_code: number | undefined): Promise<"No" | importantInfoAboutCar_plus_car_user | null> => {
 
 	let response_car: importantInfoAboutCar[];
+	console.log(region_code )
 
-	if (number === undefined && vin !== undefined) {
+	if ((number === undefined || region_code === undefined || number.length < 1 || region_code < 1) && vin !== undefined) {
 		response_car = await dbgetInfoAboutCarVIN(vin)
 	} else if (number !== undefined && region_code !== undefined) {
 		response_car = await dbgetInfoAboutCarGOSNUMBER(number, region_code)
@@ -47,6 +48,7 @@ export const getInfoAboutCar = async (vin: string | undefined, number: string | 
 		return null
 	}
 	 console.log(response_car[0].vin)
+	 
 	let response_car_user: car_user[] = await dbgetInfoAboutCar_userVIN(response_car[0].vin)
 
 	const response: importantInfoAboutCar_plus_car_user = {

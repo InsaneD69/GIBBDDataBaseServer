@@ -16,6 +16,14 @@ export type RequestPerson = FastifyRequest<{
     };
 }>;
 
+export type RequestToken = FastifyRequest<{
+	Body: {
+        username: string;
+        password: string;
+    };
+}>;
+
+
 
 // export type RequestWithIdArticle = FastifyRequest<{
 // 	Params: { id: string };

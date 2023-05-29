@@ -1,21 +1,17 @@
+// import App from "./app";
 
-import { ADDRCONFIG } from "dns";
-import App from "./app";
-import Router from "./route";
 
-export {Router};
-
-const app = App({
-	logger: true
-})
-const PORT = 8080
-app.listen({port:Number(PORT),host: '0.0.0.0' }, (err) => {
-	if (err) {
-		app.log.error(err);
-		process.exit(1)
-	}
-	app.log.info(`SERVE ON ${PORT}`)
-})
+// const app = App({
+// 	logger: true
+// })
+// const PORT = 8080
+// app.listen({port:Number(PORT),host: '0.0.0.0' }, (err: any) => {
+// 	if (err) {
+// 		app.log.error(err);
+// 		process.exit(1)
+// 	}
+// 	app.log.info(`SERVE ON ${PORT}`)
+//})
 
 
 

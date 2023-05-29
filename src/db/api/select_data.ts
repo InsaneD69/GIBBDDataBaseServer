@@ -1,5 +1,5 @@
 
-import {dbconnectionAdmin, dbconnectionPoliceman} from '../connect'
+import {dbconnectionAdmin, dbconnectionCitizen, dbconnectionPoliceman} from '../connect'
 import { QueryTypes, Sequelize } from 'sequelize';
 import {area, article, camera, car_user, importantInfoAboutCar, infoAboutPerson} from "./models/db_models"
 import { RequestCar } from '../../client_api/request_type';
@@ -43,7 +43,7 @@ export async function dbgetInfoAboulAllCamera(){
 export async function dbgetInfoAboutCarVIN(vin: string){
 
     console.log("Im in reqtodb")
-    const sequelize = new Sequelize(dbconnectionAdmin);
+    const sequelize = new Sequelize(dbconnectionPoliceman);
     
     const response: importantInfoAboutCar[] = await sequelize.query(
         'SELECT  car.vin, person.driver_license,car.mark_and_model,'+
@@ -70,7 +70,7 @@ export async function dbgetInfoAboutCarGOSNUMBER(number: string, region_code: nu
     const sequelize = new Sequelize(dbconnectionPoliceman);
     
     const response: importantInfoAboutCar[] = await sequelize.query(
-        'SELECT  car.vin, car.driver_license,car.mark_and_model,'+
+        'SELECT  car.vin, person.driver_license,car.mark_and_model,'+
         'car.color,car.car_type,car.category,car.engine_info,car.sts_num,car.pts_num,'+
         'person_name,person.surname,person.patronymic,'+
         'gosnumber.number,gosnumber.region_code '+ 
@@ -106,6 +106,7 @@ export async function dbgetInfoAboutCar_userVIN(vin: string){
         }
 
     )
+      
 
     console.log(response)
 

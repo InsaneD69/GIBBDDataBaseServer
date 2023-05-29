@@ -41,6 +41,37 @@ export const dbconnectionAdmin: string =
   + config.database.citizen.name
 
 
+
+  export function dbconnectionPolicemanClient(username:string, password:string): string {
+
+    return config.database.dialect
+      + "://"
+      + username
+      + ":"
+      + password
+      + "@"
+      + config.database.policeman.host
+      + ":"
+      + config.port
+      + "/"
+      + config.database.policeman.name;
+  }
+
+export function dbconnectionCitizenClient(username:string, password:string): string {
+
+
+  return config.database.dialect
+    + "://"
+    + username
+    + ":"
+    + password
+    + "@"
+    + config.database.citizen.host
+    + ":"
+    + config.port
+    + "/"
+    + config.database.citizen.name;
+}
 // export const dbconnectionPoliceman: string =
 //   process.env.DB_DIALECT
 //   + "://"
