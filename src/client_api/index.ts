@@ -1,2 +1,2 @@
-import articlesController from "./controller"
+import articlesController from "./api_controller"
 export { articlesController };

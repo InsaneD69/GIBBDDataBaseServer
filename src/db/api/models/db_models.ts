@@ -45,6 +45,10 @@ export type car_user = {
 }
 
 
+
+
+
+
 export type infoAboutPerson = {
     
     passport_number : string,
@@ -58,5 +62,11 @@ export type infoAboutPerson = {
 
     date_of_birth: Date,
     place_of_registr: string
+
+}
+
+export type waitUsename = {
+    
+    usename: string
 
 }

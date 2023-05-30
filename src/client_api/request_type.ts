@@ -23,6 +23,9 @@ export type RequestToken = FastifyRequest<{
     };
 }>;
 
+export type RequestWithToken = FastifyRequest<{
+	Headers: { authorization: string };
+}>
 
 
 // export type RequestWithIdArticle = FastifyRequest<{

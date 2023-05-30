@@ -1,13 +1,12 @@
 import jwt from '@fastify/jwt';
-import { Router, AuthRouter } from "./route";
-import fastifyJwt from '@fastify/jwt';
+import { ApiRouter, AuthRouter } from "./route";
 
 const fastify = require('fastify')({
 	logger: true
 });
 
 fastify.register(jwt, { secret: process.env.JWT_SECRET }),
-fastify.register(Router, { prefix: "/api" }),
+fastify.register(ApiRouter, { prefix: "/api" }),
 fastify.register(AuthRouter, { prefix: "/auth" }),
 
 fastify.listen({ port: 8080, host: '0.0.0.0' }, (err: any) => {
