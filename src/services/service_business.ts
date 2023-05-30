@@ -1,46 +1,47 @@
 
 import { article, importantInfoAboutCar_plus_car_user, person } from './models';
-import { TESTgetAllFromArticle, dbgetInfoAboulAllCamera, dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutPerson } from '../db/api/select_data'
+import {  dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutPerson } from '../db/api/select_data'
 import { camera, car_user, importantInfoAboutCar, infoAboutPerson } from '../db/api/models/db_models';
 import { RequestCar } from '../client_api/request_type';
+import { info_current_user } from '../route';
 
 
-export const getArticles = async (): Promise<article[]> => {
-	console.log("Im in service");
-	const response = await TESTgetAllFromArticle();
+// export const getArticles = async (): Promise<article[]> => {
+// 	console.log("Im in service");
+// 	const response = await TESTgetAllFromArticle();
 
-	let resp_art: article[] = [];
-	response.forEach((elem) => {
-		console.log("asas")
-		console.log(elem.article_id)
-		resp_art.push({
-			article_id: elem.article_id,
-			description: elem.description,
-			price: { start: elem.price[0].value, end: elem.price[1].value }
+// 	let resp_art: article[] = [];
+// 	response.forEach((elem) => {
+// 		console.log("asas")
+// 		console.log(elem.article_id)
+// 		resp_art.push({
+// 			article_id: elem.article_id,
+// 			description: elem.description,
+// 			price: { start: elem.price[0].value, end: elem.price[1].value }
 
-		})
+// 		})
 
 
-	});
+// 	});
 
-	return resp_art
-}
-export const getAllInfoAboutCamera = async (): Promise<any> => {
-	console.log("Im in service");
-	const response: camera[] = await dbgetInfoAboulAllCamera();
+// 	return resp_art
+// }
+// export const getAllInfoAboutCamera = async (): Promise<any> => {
+// 	console.log("Im in service");
+// 	const response: camera[] = await dbgetInfoAboulAllCamera();
 
-	return response
-}
+// 	return response
+// }
 
-export const getInfoAboutCar = async (vin: string | undefined, number: string | undefined, region_code: number | undefined): Promise<"No" | importantInfoAboutCar_plus_car_user | null> => {
+export const getInfoAboutCar = async (vin: string | undefined, number: string | undefined, region_code: number | undefined,username: string,password: string): Promise<"No" | importantInfoAboutCar_plus_car_user | null> => {
 
 	let response_car: importantInfoAboutCar[];
 	console.log(region_code )
 
 	if ((number === undefined || region_code === undefined || number.length < 1 || region_code < 1) && vin !== undefined) {
-		response_car = await dbgetInfoAboutCarVIN(vin)
+		response_car = await dbgetInfoAboutCarVIN(vin,username,password)
 	} else if (number !== undefined && region_code !== undefined) {
-		response_car = await dbgetInfoAboutCarGOSNUMBER(number, region_code)
+		response_car = await dbgetInfoAboutCarGOSNUMBER(number, region_code,username,password)
 	} else { return "No" }
 
 
@@ -49,7 +50,7 @@ export const getInfoAboutCar = async (vin: string | undefined, number: string | 
 	}
 	 console.log(response_car[0].vin)
 	 
-	let response_car_user: car_user[] = await dbgetInfoAboutCar_userVIN(response_car[0].vin)
+	let response_car_user: car_user[] = await dbgetInfoAboutCar_userVIN(response_car[0].vin,username,password)
 
 	const response: importantInfoAboutCar_plus_car_user = {
 		car: response_car[0],
@@ -59,15 +60,16 @@ export const getInfoAboutCar = async (vin: string | undefined, number: string | 
 
 	return response
 }
-export const getInfoAboutPerson = async (passport_number:string | undefined, driver_license: string | undefined ): Promise<any> => {
+export const getInfoAboutPerson = async (passport_number:string | undefined, driver_license: string | undefined, username: string,password: string ): Promise<any> => {
 	console.log("Im in service");
 
 	let response_person: infoAboutPerson[];
 
+
 	if (passport_number === undefined && driver_license !== undefined) {
-		response_person = await dbgetInfoAboutPerson(driver_license,"driver_license");
+		response_person = await dbgetInfoAboutPerson(driver_license,"driver_license",username,password);
 	} else if (passport_number !== undefined && driver_license === undefined) {
-		response_person = await dbgetInfoAboutPerson(passport_number,"passport_number");
+		response_person = await dbgetInfoAboutPerson(passport_number,"passport_number",username,password);
 	} else { return "No" }
 
 
@@ -92,8 +94,7 @@ export const getInfoAboutPerson = async (passport_number:string | undefined, dri
 // }
 
 export default {
-	getArticles,
-	getAllInfoAboutCamera,
+
 	getInfoAboutCar,
 	getInfoAboutPerson
 	// getOneArticle,

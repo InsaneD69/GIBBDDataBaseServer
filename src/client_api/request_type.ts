@@ -20,6 +20,7 @@ export type RequestToken = FastifyRequest<{
 	Body: {
         username: string;
         password: string;
+        whoami:"citizen"|"policeman"|"administrator"
     };
 }>;
 

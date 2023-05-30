@@ -1,49 +1,50 @@
 
-import {dbconnectionAdmin, dbconnectionCitizen, dbconnectionPoliceman} from '../connect'
+import {dbconnectionAdmin, dbconnectionCitizen, dbconnectionPoliceman, dbconnectionPolicemanClient} from '../connect'
 import { QueryTypes, Sequelize } from 'sequelize';
 import {area, article, camera, car_user, importantInfoAboutCar, infoAboutPerson} from "./models/db_models"
 import { RequestCar } from '../../client_api/request_type';
+import { Md5 } from 'ts-md5';
 
 
-export async function TESTgetAllFromArticle(){
+// export async function TESTgetAllFromArticle(username:string, password:string){
 
-    console.log("Im in reqtodb")
-    const sequelize = new Sequelize(dbconnectionAdmin);
+//     console.log("Im in reqtodb")
+//     const sequelize = new Sequelize(dbconnectionPolicemanClient(username,password));
     
-    const response : article[]=  await sequelize.query(
-        'SELECT * FROM article',{
-            type: QueryTypes.SELECT
-        } 
+//     const response : article[]=  await sequelize.query(
+//         'SELECT * FROM article',{
+//             type: QueryTypes.SELECT
+//         } 
 
  
-    ) 
+//     ) 
 
-    return response;
-}
+//     return response;
+// }
 
-export async function dbgetInfoAboulAllCamera(){
+// export async function dbgetInfoAboulAllCamera(){
 
-    console.log("Im in reqtodb")
-    const sequelize = new Sequelize(dbconnectionAdmin);
+//     console.log("Im in reqtodb")
+//     const sequelize = new Sequelize(dbconnectionAdmin);
     
-    const response: camera[] = await sequelize.query(
-        'SELECT camera.camera_id, camera.certificate, area.area_name'+ 
-        ' FROM camera'+
-        ' join area on area.area_id = camera.area_id',{
-            type: QueryTypes.SELECT
-        }
+//     const response: camera[] = await sequelize.query(
+//         'SELECT camera.camera_id, camera.certificate, area.area_name'+ 
+//         ' FROM camera'+
+//         ' join area on area.area_id = camera.area_id',{
+//             type: QueryTypes.SELECT
+//         }
 
-    )
+//     )
 
-    console.log(response)
+//     console.log(response)
 
-    return response;
-}
+//     return response;
+// }
 
-export async function dbgetInfoAboutCarVIN(vin: string){
+export async function dbgetInfoAboutCarVIN(vin: string,username:string, password:string){
 
     console.log("Im in reqtodb")
-    const sequelize = new Sequelize(dbconnectionPoliceman);
+    const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
     
     const response: importantInfoAboutCar[] = await sequelize.query(
         'SELECT  car.vin, person.driver_license,car.mark_and_model,'+
@@ -64,10 +65,10 @@ export async function dbgetInfoAboutCarVIN(vin: string){
 
     return response;
 }
-export async function dbgetInfoAboutCarGOSNUMBER(number: string, region_code: number){
+export async function dbgetInfoAboutCarGOSNUMBER(number: string, region_code: number,username:string, password:string){
 
     console.log("Im in reqtodb")
-    const sequelize = new Sequelize(dbconnectionPoliceman);
+    const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
     
     const response: importantInfoAboutCar[] = await sequelize.query(
         'SELECT  car.vin, person.driver_license,car.mark_and_model,'+
@@ -91,10 +92,10 @@ export async function dbgetInfoAboutCarGOSNUMBER(number: string, region_code: nu
 }
 
 
-export async function dbgetInfoAboutCar_userVIN(vin: string){
+export async function dbgetInfoAboutCar_userVIN(vin: string,username:string, password:string){
 
     console.log("Im in reqtodb")
-    const sequelize = new Sequelize(dbconnectionPoliceman);
+    const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
     
     const response: car_user[] = await sequelize.query(
         'SELECT person.person_name,person.surname,person.patronymic,'+ 
@@ -114,10 +115,10 @@ export async function dbgetInfoAboutCar_userVIN(vin: string){
 }
  
 
-export async function dbgetInfoAboutPerson(findVar: string, whoIs: "passport_number" | "driver_license"){
+export async function dbgetInfoAboutPerson(findVar: string, whoIs: "passport_number" | "driver_license",username:string, password:string){
 
     console.log("Im in reqtodb")
-    const sequelize = new Sequelize(dbconnectionPoliceman);
+    const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
     
     const response: infoAboutPerson[] = await sequelize.query(
         'SELECT person.passport_number ,person.driver_license,driver_license.date_of_issue,' +

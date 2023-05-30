@@ -16,7 +16,7 @@ export async function testCredentialsToDB(login:string,password:string, who: "po
             +');',{
             replacements: { 
                 user_name: login,
-                role_name: 'policeman'},
+                role_name: who},
             type: QueryTypes.SELECT
         } 
 

@@ -30,18 +30,28 @@ export const handleGetUnfoAdboutCar = async (req:  RequestCar, reply: FastifyRep
 	const number: string| undefined = req.query.number
 	const region_code: number| undefined = req.query.region_code
 		
-	const response  = service_business .getInfoAboutCar(vin,number,region_code)
 
-	if(await response == "No"){
-		reply = reply.code(400).send({
-			problem: "Need correct request"
-		})
-		return  reply
 
-	} else{
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
+
+        const response  = service_business.getInfoAboutCar(vin,number,region_code,info_current_user.username, info_current_user.password)
+		if(await response == "No"){
+			reply = reply.code(400).send({
+				problem: "Need correct request"
+			})
+			return  reply
 	
-	return  response;
-	}
+		} else{
+		
+		return  response;
+		}
+    }
+    else {
+        reply = reply.code(500).send({
+            problem: "oy no"
+        })
+        return reply
+    }
  
 	
 }
@@ -54,20 +64,30 @@ export const handleGetInfoAboutPerson = async (req:  RequestPerson , reply: Fast
 	const driver_license: string| undefined = req.query.driver_license
 
 	console.log(passport_number)
-	
-	
-	const response  = service_business.getInfoAboutPerson(passport_number,driver_license)
 
-	if(await response == "No"){
-		reply = reply.code(400).send({
-			problem: "Need correct request"
-		})
-		return  reply
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
 
-	} else{
+        const response  = service_business.getInfoAboutPerson(passport_number,driver_license,info_current_user.username, info_current_user.password)
+		if(await response == "No"){
+			reply = reply.code(400).send({
+				problem: "Need correct request"
+			})
+			return  reply
 	
-	return  response;
-	}
+		} else{
+		
+		return  response;
+		}
+    }
+    else {
+        reply = reply.code(500).send({
+            problem: "oy no"
+        })
+        return reply
+    }
+	
+
+
  
 	
 }

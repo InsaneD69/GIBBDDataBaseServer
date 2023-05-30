@@ -10,10 +10,9 @@ export class ErrorResponse extends Error {
 	}
 }
 
+export let info_current_user:{username: string,password: string,whoami:"policeman"| "citizen" | "administrator"} | null;
 
-export let info_current_user:{username: string,password: string} | null;
-
-export const ApiRouter = async (fastify: FastifyInstance) => {
+export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 
 	fastify.addHook("onRequest", async (request: RequestWithToken, reply: FastifyReply) => {
 		try {
@@ -22,7 +21,13 @@ export const ApiRouter = async (fastify: FastifyInstance) => {
 
 			console.log(request.headers.authorization);
 
+			info_current_user = fastify.jwt.decode(request.headers.authorization.replace("Bearer ",''))
+			if(info_current_user?.whoami !== 'policeman'){
+				throw new ErrorResponse("You don't have enough rights", 401);
+			}
+
 			let cons: boolean = false;
+
 			tokenStore.forEach((token, _username) => {
 				console.log(token)
 				if (token === request.headers.authorization) {
@@ -30,7 +35,6 @@ export const ApiRouter = async (fastify: FastifyInstance) => {
 				}
 			});
 			
-			info_current_user = fastify.jwt.decode(request.headers.authorization.replace("Bearer ",''))
 		
 			if (!cons) {
 				throw new ErrorResponse("Not valid token", 401);
@@ -46,6 +50,81 @@ export const ApiRouter = async (fastify: FastifyInstance) => {
 		// fastify.get("/camera", articleController.handleGetAllInfoAboutCamera),
 		fastify.get("/car", articleController.handleGetUnfoAdboutCar),
 		fastify.get("/person", articleController.handleGetInfoAboutPerson);
+
+
+};
+export const ApiCitizenRouter = async (fastify: FastifyInstance) => {
+
+	fastify.addHook("onRequest", async (request: RequestWithToken, reply: FastifyReply) => {
+		try {
+
+			await request.jwtVerify();
+
+			console.log(request.headers.authorization);
+
+			info_current_user = fastify.jwt.decode(request.headers.authorization.replace("Bearer ",''))
+			if(info_current_user?.whoami !== 'citizen'){
+				throw new ErrorResponse("You don't have enough rights", 401);
+			}
+
+			let cons: boolean = false;
+
+			tokenStore.forEach((token, _username) => {
+				console.log(token)
+				if (token === request.headers.authorization) {
+					cons = true;
+				}
+			});
+			
+		
+			if (!cons) {
+				throw new ErrorResponse("Not valid token", 401);
+			}
+			
+
+		} catch (err) {
+			reply.send(err)
+		}
+	})
+
+		
+
+
+};
+export const ApiAdministratorRouter = async (fastify: FastifyInstance) => {
+
+	fastify.addHook("onRequest", async (request: RequestWithToken, reply: FastifyReply) => {
+		try {
+
+			await request.jwtVerify();
+
+			console.log(request.headers.authorization);
+
+			info_current_user = fastify.jwt.decode(request.headers.authorization.replace("Bearer ",''))
+			if(info_current_user?.whoami !== 'administrator'){
+				throw new ErrorResponse("You don't have enough rights", 401);
+			}
+
+			let cons: boolean = false;
+
+			tokenStore.forEach((token, _username) => {
+				console.log(token)
+				if (token === request.headers.authorization) {
+					cons = true;
+				}
+			});
+			
+		
+			if (!cons) {
+				throw new ErrorResponse("Not valid token", 401);
+			}
+			
+
+		} catch (err) {
+			reply.send(err)
+		}
+	})
+
 
 
 };
