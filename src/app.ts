@@ -1,5 +1,5 @@
 import jwt from '@fastify/jwt';
-import {  AccountRouter, ApiPoliceRouter, AuthRouter } from "./route";
+import {  AccountRouter, ApiAdministratorRouter, ApiCitizenRouter, ApiPoliceRouter, AuthRouter } from "./route";
 
 const fastify = require('fastify')({
 	logger: true
@@ -7,6 +7,8 @@ const fastify = require('fastify')({
 
 fastify.register(jwt, { secret: process.env.JWT_SECRET }),
 fastify.register(ApiPoliceRouter, { prefix: "/api/policeman" }),
+fastify.register(ApiCitizenRouter, { prefix: "/api/citizen" }),
+fastify.register(ApiAdministratorRouter, { prefix: "/api/administrator" }),
 fastify.register(AuthRouter, { prefix: "/auth" }),
 fastify.register(AccountRouter, { prefix: "/acc" }),
 fastify.listen({ port: 8080, host: '0.0.0.0' }, (err: any) => {

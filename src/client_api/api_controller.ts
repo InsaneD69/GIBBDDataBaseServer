@@ -1,7 +1,7 @@
 import { FastifyReply} from "fastify";
 import { importantInfoAboutCar } from "../db/api/models/db_models";
 import { service_business } from "../services";
-import { RequestCar, RequestPerson, RequestToken } from "./request_type";
+import { RequestCar, RequestPerson, RequestProtocol, RequestToken } from "./request_type";
 import { Body } from "@nestjs/common";
 import { importantInfoAboutCar_plus_car_user } from "../services/models";
 import fastify from "../app";
@@ -92,7 +92,45 @@ export const handleGetInfoAboutPerson = async (req:  RequestPerson , reply: Fast
 	
 }
 
+export const handleGetProtocol = async (req:  RequestProtocol , reply: FastifyReply) => {
+	
+
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
+
+		console.log(req.query.case_id)
+
+        const response  = await service_business.getInfoAboutProtocol(req.query.case_id,req.query.vin,req.query.police_id,req.query.passport_number,
+			info_current_user.username, info_current_user.password);
+
+			console.log("response in controller")
+			console.log(response)
+		if(response === "No"){
+			
+			reply = reply.code(400).send({
+				problem: "Need correct request"
+			})
+			return  reply
+	
+		} else{
+		
+		return  response;
+		}
+    }
+    else {
+        reply = reply.code(500).send({
+            problem: "oy no"
+        })
+        return reply
+    }
+	
+
+
+ 
+	
+}
+
 export default {
 	handleGetUnfoAdboutCar,
 	handleGetInfoAboutPerson,
+	handleGetProtocol
 }

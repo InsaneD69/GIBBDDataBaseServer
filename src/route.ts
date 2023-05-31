@@ -50,7 +50,8 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 		// fastify.get("/article", articleController.handleGetArticle),
 		// fastify.get("/camera", articleController.handleGetAllInfoAboutCamera),
 		fastify.get("/car",apiController.handleGetUnfoAdboutCar),
-		fastify.get("/person", apiController.handleGetInfoAboutPerson);
+		fastify.get("/person", apiController.handleGetInfoAboutPerson),
+		fastify.get("/protocol", apiController.handleGetProtocol);
 
 
 
@@ -134,9 +135,16 @@ export const ApiAdministratorRouter = async (fastify: FastifyInstance) => {
 
 export const AccountRouter = async (fastify: FastifyInstance) => {
 
-	fastify.addHook("onRequest", async (request: RequestWithToken, reply: FastifyReply) => {
-		try {
+	fastify.post("/citizen/register",accController.handleRegisterCitizen),
 
+	fastify.addHook("onRequest", async (request: RequestWithToken, reply: FastifyReply) => {
+		
+		console.log(request.routerPath)
+		if(request.routerPath !== '/acc/citizen/register'){
+				
+		
+		try {
+			
 			await request.jwtVerify();
 
 			let cons: boolean = false;
@@ -157,9 +165,11 @@ export const AccountRouter = async (fastify: FastifyInstance) => {
 		} catch (err) {
 			reply.send(err)
 		}
+	}
 	}),
 
 	fastify.post("/logout",accController.handleLogout);
+	
 
 };
 
@@ -167,7 +177,9 @@ export const AuthRouter = async (fastify: FastifyInstance) => {
 
 	fastify.post("/token/policeman", tokenController.handleGetTokenP),
 	fastify.post("/token/citizen", tokenController.handleGetTokenC),
-	fastify.post("/token/administrator", tokenController.handleGetTokenA)
+	fastify.post("/token/administrator", tokenController.handleGetTokenA);
+	
+
 	
 
 

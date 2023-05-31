@@ -14,11 +14,12 @@ export async function testCredentialsToDB(login:string,password:string, who: "po
             +'select usesysid from pg_user '
             +'   where usename = :role_name '
             +');',{
-            replacements: { 
-                user_name: login,
-                role_name: who},
-            type: QueryTypes.SELECT
-        } 
+                replacements: { 
+                    user_name: login,
+                    role_name: who
+                },
+                type: QueryTypes.SELECT
+            } 
 
     ) 
 

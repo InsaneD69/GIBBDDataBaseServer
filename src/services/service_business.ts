@@ -1,10 +1,10 @@
 
-import { article, importantInfoAboutCar_plus_car_user, person } from './models';
-import {  dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutPerson } from '../db/api/select_data'
-import { camera, car_user, importantInfoAboutCar, infoAboutPerson } from '../db/api/models/db_models';
-import { RequestCar } from '../client_api/request_type';
-import { info_current_user } from '../route';
-import { log } from 'console';
+import { article, importantInfoAboutCar_plus_car_user, person, protocol } from './models';
+import { dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle } from '../db/api/select_data'
+import { articles, car_user, importantInfoAboutCar, infoAboutPerson } from '../db/api/models/db_models';
+import { dbconnectionPoliceman, dbconnectionPolicemanClient } from '../db/connect';
+import { Md5 } from 'ts-md5';
+import { Sequelize } from 'sequelize';
 
 
 // export const getArticles = async (): Promise<article[]> => {
@@ -34,24 +34,27 @@ import { log } from 'console';
 // 	return response
 // }
 
-export const getInfoAboutCar = async (vin: string | undefined, number: string | undefined, region_code: number | undefined,username: string,password: string): Promise<"No" | importantInfoAboutCar_plus_car_user | null> => {
+export const getInfoAboutCar = async (vin: string | undefined, number: string | undefined, region_code: number | undefined, username: string, password: string): Promise<"No" | importantInfoAboutCar_plus_car_user | null> => {
 
 	let response_car: importantInfoAboutCar[];
-	console.log(region_code )
+	console.log(region_code)
+
+
+	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
 
 	if ((number === undefined || region_code === undefined || number.length < 1 || region_code < 1) && vin !== undefined) {
-		response_car = await dbgetInfoAboutCarVIN(vin,username,password)
+		response_car = await dbgetInfoAboutCarVIN(sequelize, vin)
 	} else if (number !== undefined && region_code !== undefined) {
-		response_car = await dbgetInfoAboutCarGOSNUMBER(number, region_code,username,password)
+		response_car = await dbgetInfoAboutCarGOSNUMBER(sequelize, number, region_code)
 	} else { return "No" }
 
 
-	if(response_car.length == 0){
+	if (response_car.length == 0) {
 		return null
 	}
-	 console.log(response_car[0].vin)
-	 
-	let response_car_user: car_user[] = await dbgetInfoAboutCar_userVIN(response_car[0].vin,username,password)
+	console.log(response_car[0].vin)
+
+	let response_car_user: car_user[] = await dbgetInfoAboutCar_userVIN(sequelize, response_car[0].vin)
 
 	const response: importantInfoAboutCar_plus_car_user = {
 		car: response_car[0],
@@ -61,20 +64,21 @@ export const getInfoAboutCar = async (vin: string | undefined, number: string | 
 
 	return response
 }
-export const getInfoAboutPerson = async (passport_number:string | undefined, driver_license: string | undefined, username: string,password: string ): Promise<any> => {
+export const getInfoAboutPerson = async (passport_number: string | undefined, driver_license: string | undefined, username: string, password: string): Promise<any> => {
 	console.log("Im in service");
 
 	let response_person: infoAboutPerson[];
 
-	console.log(passport_number)
-	console.log(typeof driver_license)
+	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
 
-	if ((passport_number === undefined || passport_number === null || passport_number === '')&& driver_license !== undefined) {
-		response_person = await dbgetInfoAboutPerson(driver_license,"driver_license",username,password);
-		console.log("asad")
+	if ((passport_number === undefined || passport_number === null || passport_number === '') && driver_license !== undefined) {
+
+		response_person = await dbgetInfoAboutPerson(sequelize, driver_license, "driver_license");
+
 	} else if (passport_number !== undefined && (driver_license === undefined || driver_license === null || driver_license === '')) {
-		console.log("qwert")
-		response_person = await dbgetInfoAboutPerson(passport_number,"passport_number",username,password);
+
+		response_person = await dbgetInfoAboutPerson(sequelize, passport_number, "passport_number");
+
 	} else { return "No" }
 
 
@@ -83,27 +87,51 @@ export const getInfoAboutPerson = async (passport_number:string | undefined, dri
 	return response
 }
 
-// export const createArticle = async (body: ArticleAttributes): Promise<ArticleAttributes> => {
-// 	const response: ArticleAttributes = await ArticleModel.create(body)
-// 	return response
-// }
+export const getInfoAboutProtocol = async (case_id: number | undefined, vin: string | undefined,
+	police_id: string | undefined, passport_number: string | undefined, username: string, password: string): Promise<any> => {
 
-// export const updateArticle = async (id: string, body: ArticleAttributes) => {
-// 	const response = await ArticleModel.update({ ...body }, { where: { id } })
-// 	return response
-// }
+	let response_protocol: protocol[];
 
-// export const deleteArticle = async (id: string) => {
-// 	const response = await ArticleModel.destroy({ where: { id } });
-// 	return response
-// }
+	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
+
+	if (case_id !== undefined && case_id !== null && case_id > 0) {
+
+		response_protocol = await dbgetInfoAboutProtocol(sequelize, case_id, "case_id");
+
+	} else if (passport_number !== undefined && passport_number !== null && passport_number !== '') {
+
+		response_protocol = await dbgetInfoAboutProtocol(sequelize, passport_number, "passport_number");
+
+	} else  if (vin !== undefined && vin !== null && vin !== '') {
+
+		response_protocol = await dbgetInfoAboutProtocol(sequelize, vin, "vin");
+
+	} else  if (police_id !== undefined && police_id !== null && police_id !== '') {
+
+		response_protocol = await dbgetInfoAboutProtocol(sequelize, police_id, "police_id");
+	} else { console.log("im i else")
+	return "No" }
+
+	
+
+		 for(let i =0;i<response_protocol.length;i++ ) {
+
+			const responce_art: articles[] = await dbgetInfoAboutProtocolArticle(sequelize, response_protocol[i].case_id);
+			response_protocol[i].articles=responce_art
+			
+		}
+
+  
+	console.log(response_protocol)
+
+
+	return response_protocol
+}
 
 export default {
 
 	getInfoAboutCar,
-	getInfoAboutPerson
-	// getOneArticle,
-	// createArticle,
-	// updateArticle,
-	// deleteArticle
+	getInfoAboutPerson,
+	getInfoAboutProtocol
+
 }

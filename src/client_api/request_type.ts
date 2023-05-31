@@ -9,12 +9,21 @@ export type RequestCar = FastifyRequest<{
     };
 }>;
 
-export type RequestPerson = FastifyRequest<{
+export type RequestProtocol  = FastifyRequest<{
+	Querystring: {
+        case_id: number | undefined,
+        vin: string | undefined,
+        police_id: string | undefined,
+        passport_number: string | undefined
+    };
+}>;
+export type RequestPerson= FastifyRequest<{
 	Querystring: {
         passport_number: string | undefined;
         driver_license: string | undefined;
     };
 }>;
+
 
 export type RequestToken = FastifyRequest<{
 	Body: {
@@ -27,7 +36,15 @@ export type RequestToken = FastifyRequest<{
 export type RequestWithToken = FastifyRequest<{
 	Headers: { authorization: string };
 }>
+export type RequestRegistrationCitizen = FastifyRequest<{
+	Body: { 
+        email: string,
+        phone_number: number,
+        username: string,
+        password: string      
 
+    };
+}>
 
 // export type RequestWithIdArticle = FastifyRequest<{
 // 	Params: { id: string };

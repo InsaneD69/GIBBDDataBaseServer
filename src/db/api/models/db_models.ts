@@ -70,3 +70,8 @@ export type waitUsename = {
     usename: string
 
 }
+
+export type articles = {
+article_id: string
+}
+
