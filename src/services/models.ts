@@ -39,3 +39,48 @@ export type person = {
     date_of_birth: Date,
     place_of_registr: string
 }
+export type protocol = {
+    // from protocol
+    case_id: number
+    vin: string,
+    passport_number: string,
+    date_of_case: string,
+    case_address: string,
+    camera_id: string,
+    case_reason: string,
+    case_verdict: string,
+    police_id: string,
+
+    //from person
+    person_name: string,
+    surname: string,
+    patronymic: string,
+    phone_number: string,
+    job_info: string,
+
+    //from passport
+    date_of_birth: Date,
+    unit: string,
+    place_of_registr: string,
+
+    
+    //from policeman
+    full_name: string,
+    post: string,
+    rank: string,
+
+    //from car
+    mark_and_model: string,
+
+
+    //from gosnumber
+    number: string,
+    region_code: number
+
+
+    //from article
+    article_id: string,
+    description: string
+
+
+}
