@@ -4,6 +4,7 @@ import {  dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_us
 import { camera, car_user, importantInfoAboutCar, infoAboutPerson } from '../db/api/models/db_models';
 import { RequestCar } from '../client_api/request_type';
 import { info_current_user } from '../route';
+import { log } from 'console';
 
 
 // export const getArticles = async (): Promise<article[]> => {
@@ -65,10 +66,14 @@ export const getInfoAboutPerson = async (passport_number:string | undefined, dri
 
 	let response_person: infoAboutPerson[];
 
+	console.log(passport_number)
+	console.log(typeof driver_license)
 
-	if (passport_number === undefined && driver_license !== undefined) {
+	if ((passport_number === undefined || passport_number === null || passport_number === '')&& driver_license !== undefined) {
 		response_person = await dbgetInfoAboutPerson(driver_license,"driver_license",username,password);
-	} else if (passport_number !== undefined && driver_license === undefined) {
+		console.log("asad")
+	} else if (passport_number !== undefined && (driver_license === undefined || driver_license === null || driver_license === '')) {
+		console.log("qwert")
 		response_person = await dbgetInfoAboutPerson(passport_number,"passport_number",username,password);
 	} else { return "No" }
 

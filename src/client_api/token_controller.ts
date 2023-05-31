@@ -120,7 +120,6 @@ export const handleGetTokenA = async (req: RequestToken, reply: FastifyReply) =>
 
 
 
-
 export default {
     handleGetTokenC, handleGetTokenA, handleGetTokenP
 
