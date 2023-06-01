@@ -44,6 +44,11 @@ export type RequestRegistrationCitizen = FastifyRequest<{
         password: string      
 
     };
+}>;
+export type RequestDeleteCitizen = FastifyRequest<{
+	Headers: { 
+        password: string      
+    };
 }>
 
 // export type RequestWithIdArticle = FastifyRequest<{

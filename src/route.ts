@@ -135,7 +135,6 @@ export const ApiAdministratorRouter = async (fastify: FastifyInstance) => {
 
 export const AccountRouter = async (fastify: FastifyInstance) => {
 
-	fastify.post("/citizen/register",accController.handleRegisterCitizen),
 
 	fastify.addHook("onRequest", async (request: RequestWithToken, reply: FastifyReply) => {
 		
@@ -168,7 +167,9 @@ export const AccountRouter = async (fastify: FastifyInstance) => {
 	}
 	}),
 
-	fastify.post("/logout",accController.handleLogout);
+	fastify.post("/citizen/register",accController.handleRegisterCitizen),
+	fastify.post("/logout",accController.handleLogout),
+	fastify.post("/citizen/delete",accController.handleDeleteCitizen);
 	
 
 };

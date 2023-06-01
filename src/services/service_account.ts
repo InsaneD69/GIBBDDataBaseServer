@@ -3,6 +3,7 @@ import { dbconnectionCitizen } from "../db/connect";
 
 import { dbCheckEmail, dbCheckPhone, dbCheckUser } from "../db/api/select_data";
 import { dbpostNewCitizen } from "../db/api/insert_data";
+import { dbDeleteCitizenAccount } from "../db/api/delete_data";
 
 
 export const registerCitizenAccount = async (username: string, password: string,email: string, phone_number: number)
@@ -34,8 +35,28 @@ export const registerCitizenAccount = async (username: string, password: string,
 
 }
 
+
+
+export const deleteCitizenAccount = async (username: string): Promise<'ok'| 'problem'> => {
+
+	const sequelize = new Sequelize(dbconnectionCitizen);
+
+    const response_reg = await dbDeleteCitizenAccount(sequelize,username);
+
+    console.log(response_reg)
+
+
+    return 'ok';
+
+}
+
+
+
+
+
 export default {
 
-    registerCitizenAccount
+    registerCitizenAccount,
+    deleteCitizenAccount
 
 }

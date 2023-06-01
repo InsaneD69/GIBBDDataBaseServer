@@ -1,5 +1,5 @@
 import { FastifyReply } from "fastify";
-import { RequestRegistrationCitizen, RequestToken } from "./request_type";
+import { RequestDeleteCitizen, RequestRegistrationCitizen, RequestToken } from "./request_type";
 import { tokenStore } from "./token_controller";
 import { info_current_user } from "../route";
 import  service_account  from "../services/service_account";
@@ -60,7 +60,38 @@ export const handleRegisterCitizen = async (req: RequestRegistrationCitizen, rep
 
 };
 
+export const handleDeleteCitizen = async (req: RequestDeleteCitizen, reply: FastifyReply) => {
+
+    if (req.headers.password !== undefined && info_current_user?.password !== undefined &&(info_current_user?.password === req.headers.password)) {
+
+       await service_account.deleteCitizenAccount(info_current_user?.username).then((response)=>{
+        
+        if( response !== 'ok'){
+            
+             return reply.send(response);
+        } else {
+            return reply.send("you deleted, dear "+info_current_user?.username);
+        }
+            
+       })
+   
+    }
+    else {
+        reply = reply.code(400).send({
+            problem: "not correct account password"
+        })
+        return reply
+    }
+
+  
+
+
+   
+
+};
+
 export default {
     handleLogout,
-    handleRegisterCitizen
+    handleRegisterCitizen,
+    handleDeleteCitizen
 }

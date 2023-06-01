@@ -23,7 +23,7 @@ export async function testCredentialsToDB(login:string,password:string, who: "po
 
     ) 
 
-
+            console.log(response )
     return response[0].usename;
 }
 
