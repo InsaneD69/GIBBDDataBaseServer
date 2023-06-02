@@ -43,7 +43,7 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 			
 
 		} catch (err) {
-			reply.send(err)
+			return reply.code(401).send(err);
 		}
 	}),
 
@@ -52,8 +52,8 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 		fastify.get("/car",apiController.handleGetUnfoAdboutCar),
 		fastify.get("/person", apiController.handleGetInfoAboutPerson),
 		fastify.get("/protocol", apiController.handleGetProtocol),
-		fastify.get("/articles", apiController.handleGetArticle);
-		// fastify.post("/protocol", apiController.)
+		fastify.get("/articles", apiController.handleGetArticle),
+	    fastify.post("/protocol", apiController.handlePostProtocol);
 
 
 
@@ -84,13 +84,17 @@ export const ApiCitizenRouter = async (fastify: FastifyInstance) => {
 		
 			if (!cons) {
 				throw new ErrorResponse("Not valid token", 401);
+				
 			}
 			
 
 		} catch (err) {
-			reply.send(err)
+			
+			return reply.code(401).send(err);
 		}
-	})
+	}),
+
+
 	fastify.get("/protocol", apiController.handleGetProtocol),
 	fastify.post("/addperson", apiController.handlePostAccConnection),
 	fastify.put("/payfine", apiController.handleUpdateFineStatus);
@@ -127,7 +131,7 @@ export const ApiAdministratorRouter = async (fastify: FastifyInstance) => {
 			
 
 		} catch (err) {
-			reply.send(err)
+			return reply.code(401).send(err);
 		}
 	})
 
@@ -170,9 +174,12 @@ export const AccountRouter = async (fastify: FastifyInstance) => {
 	}
 	}),
 
-	fastify.post("/citizen/register",accController.handleRegisterCitizen),
+	
+	fastify.post("/citizen",accController.handleRegisterCitizen),
+
 	fastify.post("/logout",accController.handleLogout),
-	fastify.post("/citizen/delete",accController.handleDeleteCitizen);
+	fastify.delete("/citizen",accController.handleDeleteCitizen)
+	//fastify.delete("/citizen",accController.);
 	
 
 };

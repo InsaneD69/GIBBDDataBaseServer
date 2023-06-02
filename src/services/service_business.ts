@@ -8,6 +8,7 @@ import { Sequelize } from 'sequelize';
 import { dbCreateProtocol } from '../db/api/transactions';
 import { dbpostPersonForAccount } from '../db/api/insert_data';
 import { dbupdateFineStatus } from '../db/api/update_data';
+import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount } from '../db/api/delete_data';
 
 
 // export const getArticles = async (): Promise<article[]> => {
@@ -240,6 +241,49 @@ export const putFineStatus = async (data: dataForPayFine, username: string, pass
 	
 }
 
+export const deleteCitizenAccount = async (verify_password: string, username: string, password: string): Promise<"ok"|"error"|"no have permissions"> => {
+
+	if(verify_password!==password){
+		return "no have permissions"
+	}
+
+	const sequelize = new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
+
+
+	const response = await dbDeleteCitizenAccount(sequelize, username);
+
+	switch(response){
+
+		case "ok":
+			return 'ok'
+		case "error":
+			return 'error'
+	}
+	
+	
+}
+
+
+export const deleteAccToPersonConnect = async (passport_number: number, username: string, password: string): Promise<"ok"|"error"> => {
+
+	const sequelize = new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
+
+
+	const response = await dbDeleteAccToPersonConnect(sequelize, passport_number);
+
+	switch(response){
+
+		case "ok":
+			return 'ok'
+		case "error":
+			return 'error'
+	}
+	
+	
+}
+
+
+
 export default {
 
 	getInfoAboutCar,
@@ -248,5 +292,6 @@ export default {
 	postNewProtocol,
 	getArticles,
 	postNewAccConnection, 
-	putFineStatus
+	putFineStatus,
+	deleteAccToPersonConnect
 }

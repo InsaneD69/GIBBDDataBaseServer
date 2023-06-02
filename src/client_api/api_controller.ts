@@ -279,11 +279,14 @@ export const handleUpdateFineStatus = async (req: RequestPayFine , reply: Fastif
 
 
 
+
+
 export default {
 	handleUpdateFineStatus,
 	handleGetUnfoAdboutCar,
 	handleGetInfoAboutPerson,
 	handleGetProtocol,
 	handleGetArticle,
-	handlePostAccConnection
+	handlePostAccConnection,
+	handlePostProtocol
 }

@@ -1,9 +1,10 @@
 import { QueryTypes, Sequelize } from "sequelize";
-import { dbconnectionCitizen } from "../db/connect";
+import { dbconnectionCitizen, dbconnectionCitizenClient } from "../db/connect";
 
 import { dbCheckEmail, dbCheckPhone, dbCheckUser } from "../db/api/select_data";
 import { dbpostNewCitizen } from "../db/api/insert_data";
-import { dbDeleteCitizenAccount } from "../db/api/delete_data";
+import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount } from "../db/api/delete_data";
+import { Md5 } from "ts-md5";
 
 
 export const registerCitizenAccount = async (username: string, password: string,email: string, phone_number: number)
@@ -37,26 +38,46 @@ export const registerCitizenAccount = async (username: string, password: string,
 
 
 
-export const deleteCitizenAccount = async (username: string): Promise<'ok'| 'problem'> => {
+export const deleteCitizenAccount = async (username: string): Promise<'ok'| 'error'> => {
 
 	const sequelize = new Sequelize(dbconnectionCitizen);
 
-    const response_reg = await dbDeleteCitizenAccount(sequelize,username);
+    const response = await dbDeleteCitizenAccount(sequelize,username);
 
-    console.log(response_reg)
+    switch(response){
 
-
-    return 'ok';
+		case "ok":
+			return 'ok'
+		case "error":
+			return 'error'
+	}
 
 }
 
 
+export const deleteAccToPersonConnect = async (passport_number: number, username: string, password: string): Promise<"ok"|"error"> => {
 
+	const sequelize = new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
+
+
+	const response = await dbDeleteAccToPersonConnect(sequelize, passport_number);
+
+	switch(response){
+
+		case "ok":
+			return 'ok'
+		case "error":
+			return 'error'
+	}
+	
+	
+}
 
 
 export default {
 
     registerCitizenAccount,
-    deleteCitizenAccount
+    deleteCitizenAccount,
+    deleteAccToPersonConnect 
 
 }

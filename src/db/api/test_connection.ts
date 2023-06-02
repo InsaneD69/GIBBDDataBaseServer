@@ -31,20 +31,3 @@ export async function testCredentialsToDB(login:string,password:string, who: "po
             console.log(response )
     return response[0].usename;
 }
-
-
-// export async function testCredentialsCitizenToDB(login:string,password:string){
-
-//     console.log("Im in testCredentials")
-//     const sequelize = new Sequelize(dbconnectionAdmin);
-    
-//     const response : any=  await sequelize.query(
-//         'SELECT rolcanlogin FROM   pg_catalog.pg_roles   WHERE  rolname = '+alexander1+' and rolcanlogin = true;',{
-//             type: QueryTypes.SELECT
-//         } 
-
- 
-//     ) 
-
-//     return response;
-// }

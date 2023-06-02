@@ -5,23 +5,6 @@ import { protocol } from '../../services/models';
 import { dbconnectionPoliceman } from '../connect';
 
 
-
-// export async function TESTgetAllFromArticle(username:string, password:string){
-
-//     console.log("Im in reqtodb")
-//     const sequelize = new Sequelize(dbconnectionPolicemanClient(username,password));
-
-//     const response : article[]=  await sequelize.query(
-//         'SELECT * FROM article',{
-//             type: QueryTypes.SELECT
-//         } 
-
-
-//     ) 
-
-//     return response;
-// }
-
 // export async function dbgetInfoAboulAllCamera(){
 
 //     console.log("Im in reqtodb")
@@ -53,12 +36,10 @@ export async function dbgetInfoAboutCarVIN(sequelize: Sequelize, vin: string) {
         ' join sts on car.sts_num = sts.sts_id' +
         ' join person on person.passport_number = sts.passport_number' +
         ' WHERE car.vin = \'' + vin + "\'", {
-        type: QueryTypes.SELECT
-    }
-
+            type: QueryTypes.SELECT
+        }
     )
    
-
     console.log(response)
 
     return response;
