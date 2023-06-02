@@ -1,4 +1,5 @@
 import { FastifyRequest } from "fastify";
+import { articles, fine } from "../db/api/models/db_models";
 
 
 export type RequestCar = FastifyRequest<{
@@ -49,7 +50,62 @@ export type RequestDeleteCitizen = FastifyRequest<{
 	Headers: { 
         password: string      
     };
-}>
+}>;
+
+export type RequestPostProtocol = FastifyRequest<{
+    Body:{
+    // from protocol
+    case_id: number
+    vin: string,
+    passport_number: string,
+    date_of_case: string,
+    case_address: string,
+    camera_id: string,
+    case_reason: string,
+    case_verdict: string,
+    police_id: string,
+
+    //from person
+    person_name: string,
+    surname: string,
+    patronymic: string,
+    phone_number: string,
+    job_info: string,
+
+    //from passport
+    date_of_birth: Date,
+    unit: string,
+    place_of_registr: string,
+
+    
+    //from policeman
+    full_name: string,
+    post: string,
+    rank: string,
+
+    //from car
+    mark_and_model: string,
+
+
+    //from gosnumber
+    number: string,
+    region_code: number
+
+
+    //from case_article
+    articles: articles[],
+
+    fines: fine[]
+    
+
+
+    
+    }
+}>;
+
+
+
+
 
 // export type RequestWithIdArticle = FastifyRequest<{
 // 	Params: { id: string };

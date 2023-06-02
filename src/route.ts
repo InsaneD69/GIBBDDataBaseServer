@@ -52,6 +52,7 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 		fastify.get("/car",apiController.handleGetUnfoAdboutCar),
 		fastify.get("/person", apiController.handleGetInfoAboutPerson),
 		fastify.get("/protocol", apiController.handleGetProtocol);
+		// fastify.post("/protocol", apiController.)
 
 
 

@@ -5,7 +5,12 @@ import { waitUsename } from "./models/db_models";
 
 export async function testCredentialsToDB(login:string,password:string, who: "policeman"| "citizen" | "administrator"){
 
+    const passwordmd = Md5.hashStr(password);
+    console.log(passwordmd)
+    console.log(login)
+    console.log(who)
     const sequelize = new Sequelize(dbconnectionCitizenClient(login,Md5.hashStr(password)));
+
    
     const response : waitUsename[]=  await sequelize.query(
         'SELECT pg_user.usename '

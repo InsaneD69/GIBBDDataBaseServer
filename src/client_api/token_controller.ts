@@ -49,6 +49,8 @@ export const handleGetTokenC = async (req: RequestToken, reply: FastifyReply) =>
 
     if (req.body.username !== undefined && req.body.password !== undefined) {
 
+
+        
         const a: any = await testCredentialsToDB(req.body.username , req.body.password,"citizen")
         console.log("ApiContr")
         console.log(a)

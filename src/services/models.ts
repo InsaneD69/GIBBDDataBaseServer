@@ -1,6 +1,6 @@
 //type selectReq = {column:string[],table:string[]}
 
-import { articles, car_user, importantInfoAboutCar } from "../db/api/models/db_models"
+import { articles, car_user, fine, importantInfoAboutCar } from "../db/api/models/db_models"
 
 export type area = {
     area_id: string,
@@ -76,11 +76,13 @@ export type protocol = {
 
     //from gosnumber
     number: string,
-    region_code: number
+    region_code: number,
 
 
     //from case_article
-    articles: articles[]
+    articles: articles[],
+
+    fines: fine[]
     
 
 }

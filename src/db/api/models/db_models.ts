@@ -75,3 +75,12 @@ export type articles = {
 article_id: string
 }
 
+
+    //from fine
+
+export type fine = {
+    date_start: Date
+    date_end: Date,
+    date_payment: Date,
+    sum: number
+}

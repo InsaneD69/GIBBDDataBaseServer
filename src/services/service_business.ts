@@ -1,10 +1,11 @@
 
 import { article, importantInfoAboutCar_plus_car_user, person, protocol } from './models';
-import { dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle } from '../db/api/select_data'
-import { articles, car_user, importantInfoAboutCar, infoAboutPerson } from '../db/api/models/db_models';
+import { dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle, dbgetInfoAboutProtocolFine } from '../db/api/select_data'
+import { articles, car_user, fine, importantInfoAboutCar, infoAboutPerson } from '../db/api/models/db_models';
 import { dbconnectionPoliceman, dbconnectionPolicemanClient } from '../db/connect';
 import { Md5 } from 'ts-md5';
 import { Sequelize } from 'sequelize';
+import { dbCreateProtocol } from '../db/api/transactions';
 
 
 // export const getArticles = async (): Promise<article[]> => {
@@ -118,6 +119,9 @@ export const getInfoAboutProtocol = async (case_id: number | undefined, vin: str
 
 			const responce_art: articles[] = await dbgetInfoAboutProtocolArticle(sequelize, response_protocol[i].case_id);
 			response_protocol[i].articles=responce_art
+
+			const responce_fine: fine[] = await dbgetInfoAboutProtocolFine(sequelize, response_protocol[i].case_id);
+			response_protocol[i].fines=responce_fine
 			
 		}
 
@@ -128,10 +132,26 @@ export const getInfoAboutProtocol = async (case_id: number | undefined, vin: str
 	return response_protocol
 }
 
+
+export const postNewProtocol = async (protocol: protocol, username: string, password: string): Promise<"ok"| "not ok"> => {
+
+	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
+
+
+	const response = await dbCreateProtocol(sequelize, protocol);
+
+
+  
+	
+
+	return "ok";
+}
+
 export default {
 
 	getInfoAboutCar,
 	getInfoAboutPerson,
-	getInfoAboutProtocol
+	getInfoAboutProtocol,
+	postNewProtocol
 
 }

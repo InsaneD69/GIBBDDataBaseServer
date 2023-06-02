@@ -1,6 +1,6 @@
 
 import { QueryTypes, Sequelize } from 'sequelize';
-import { articles, car_user,  importantInfoAboutCar, infoAboutPerson } from "./models/db_models"
+import { articles, car_user,  fine,  importantInfoAboutCar, infoAboutPerson } from "./models/db_models"
 import { protocol } from '../../services/models';
 import { dbconnectionPoliceman } from '../connect';
 
@@ -168,6 +168,26 @@ export async function dbgetInfoAboutProtocolArticle(sequelize: Sequelize, case_i
     const response: articles[] = await sequelize.query(
         'SELECT  case_article.article_id ' +
         ' FROM case_article ' +
+        'WHERE case_id = :using_var; ', { 
+            replacements: {  
+                using_var: case_id
+            }, 
+            type: QueryTypes.SELECT 
+        }
+
+    )
+	console.log("response in selectart")
+
+    console.log(response)
+   
+    return response;
+};
+
+export async function dbgetInfoAboutProtocolFine(sequelize: Sequelize, case_id: number) {
+
+    const response: fine[] = await sequelize.query(
+        'SELECT  date_start, date_end,date_payment,sum ' +
+        ' FROM fine ' +
         'WHERE case_id = :using_var; ', { 
             replacements: {  
                 using_var: case_id
