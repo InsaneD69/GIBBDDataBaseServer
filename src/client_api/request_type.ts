@@ -92,15 +92,21 @@ export type RequestPostProtocol = FastifyRequest<{
 
 
     //from case_article
-    articles: articles[],
+    articles: articlesR[],
 
-    fines: fine[]
-    
-
-
-    
+    fines: fineR[]
     }
 }>;
+export type articlesR = {
+    article_id: string
+    }
+
+export type fineR = {
+    date_start: Date
+    date_end: Date,
+    date_payment: Date,
+    sum: number
+}
 
 
 export type RequestPostAccConn = FastifyRequest<{
