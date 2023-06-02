@@ -8,10 +8,13 @@ export type area = {
     area_name: string
 }
 
-export type article = {
+export type articleInfo = {
     article_id: string,
     description: string,
-    price : { start: number, end: number}
+    price : { start: number, end: number}| null,
+    deprivation_months: { start: number, end: number} | null
+
+
 }
 
 export type OneAreaAllInfo = {
@@ -39,6 +42,54 @@ export type person = {
     date_of_birth: Date,
     place_of_registr: string
 }
+export type newProtocol = {
+
+    // from protocol
+    vin: string,
+    passport_number: string,
+    date_of_case: string,
+    case_address: string,
+    camera_id: string,
+    case_reason: string,
+    case_verdict: string,
+    police_id: string,
+
+    //from person
+    person_name: string,
+    surname: string,
+    patronymic: string,
+    phone_number: string,
+    job_info: string,
+
+    //from passport
+    date_of_birth: Date,
+    unit: string,
+    place_of_registr: string,
+
+    
+    //from policeman
+    full_name: string,
+    post: string,
+    rank: string,
+
+    //from car
+    mark_and_model: string,
+
+
+    //from gosnumber
+    number: string,
+    region_code: number,
+
+
+    //from case_article
+    articles: articles[],
+
+    fines: fine[]
+    
+
+}
+
+
 export type protocol = {
 
     // from protocol
@@ -84,5 +135,15 @@ export type protocol = {
 
     fines: fine[]
     
+
+}
+
+export type dataForAddPerson = {
+    passport_number: number
+}
+
+export type dataForPayFine = {
+    case_id: number,
+    payment: number
 
 }

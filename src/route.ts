@@ -51,7 +51,8 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 		// fastify.get("/camera", articleController.handleGetAllInfoAboutCamera),
 		fastify.get("/car",apiController.handleGetUnfoAdboutCar),
 		fastify.get("/person", apiController.handleGetInfoAboutPerson),
-		fastify.get("/protocol", apiController.handleGetProtocol);
+		fastify.get("/protocol", apiController.handleGetProtocol),
+		fastify.get("/articles", apiController.handleGetArticle);
 		// fastify.post("/protocol", apiController.)
 
 
@@ -90,8 +91,9 @@ export const ApiCitizenRouter = async (fastify: FastifyInstance) => {
 			reply.send(err)
 		}
 	})
-
-		
+	fastify.get("/protocol", apiController.handleGetProtocol),
+	fastify.post("/addperson", apiController.handlePostAccConnection),
+	fastify.put("/payfine", apiController.handleUpdateFineStatus);
 
 
 };
@@ -182,11 +184,4 @@ export const AuthRouter = async (fastify: FastifyInstance) => {
 	fastify.post("/token/administrator", tokenController.handleGetTokenA);
 	
 
-	
-
-
-
 };
-
-
-// export default Router;

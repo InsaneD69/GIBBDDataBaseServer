@@ -1,21 +1,46 @@
-import { FastifyReply} from "fastify";
+import { FastifyReply, FastifyRequest} from "fastify";
 import { importantInfoAboutCar } from "../db/api/models/db_models";
 import { service_business } from "../services";
-import { RequestCar, RequestPerson, RequestPostProtocol, RequestProtocol, RequestToken } from "./request_type";
+import { RequestCar, RequestPayFine, RequestPerson, RequestPostAccConn, RequestPostProtocol, RequestProtocol, RequestToken } from "./request_type";
 import { Body } from "@nestjs/common";
-import { importantInfoAboutCar_plus_car_user } from "../services/models";
+import { articleInfo, importantInfoAboutCar_plus_car_user } from "../services/models";
 import fastify from "../app";
 import { info_current_user } from "../route";
 import { testCredentialsToDB } from "../db/api/test_connection";
 
 
 
-// export const handleGetArticle = () => {
-// 	console.log("Im in controller")
+export const handleGetArticle = async (req: FastifyRequest , reply: FastifyReply) =>{
 	
-// 	return  ervice_business .getArticles()
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
+
+		await service_business.getArticles(info_current_user.username, info_current_user.password).then((response) =>{
+			if( response == null){
+				reply = reply.code(500).send({
+					problem: "Server Error"
+				})
+				return  reply
+		
+			} else{
+
+				console.log("contr have: ")
+				console.log(response)
+			       return  reply.send(response);
+			}
+
+
+		 })
+		
+    }
+    else {
+        reply = reply.code(500).send({
+            problem: "oy no"
+        })
+        return reply
+    }
+
 	
-// }
+}
 // export const handleGetAllInfoAboutCamera = () => {
 // 	console.log("Im in controller")
 	
@@ -100,7 +125,7 @@ export const handleGetProtocol = async (req:  RequestProtocol , reply: FastifyRe
 		console.log(req.query.case_id)
 
         const response  = await service_business.getInfoAboutProtocol(req.query.case_id,req.query.vin,req.query.police_id,req.query.passport_number,
-			info_current_user.username, info_current_user.password);
+			info_current_user.username, info_current_user.password, info_current_user.whoami);
 
 			console.log("response in controller")
 			console.log(response)
@@ -111,7 +136,13 @@ export const handleGetProtocol = async (req:  RequestProtocol , reply: FastifyRe
 			})
 			return  reply
 	
-		} else{
+		} else if(response === "no perm"){
+			reply = reply.code(400).send({
+				problem: "Dont`t have permissions"
+			})
+			return  reply
+		}
+		else{
 		
 		return  response;
 		}
@@ -167,9 +198,92 @@ export const handlePostProtocol = async (req:  RequestPostProtocol, reply: Fasti
 }
 
 
+export const handlePostAccConnection = async (req:  RequestPostAccConn, reply: FastifyReply) => {
+	
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
+
+		console.log(req.body)
+		await service_business.postNewAccConnection(req.body,info_current_user.username, info_current_user.password).then((response) =>{
+			if( response != 'ok'){
+				reply = reply.code(500).send({
+					problem: "Server Error"
+				})
+				return  reply
+		
+			} else{
+
+				console.log("contr have: ")
+				console.log(response)
+			       return  reply.send(response);
+			}
+
+
+		 })
+        
+    }
+    else {
+        reply = reply.code(400).send({
+            problem: "oy no"
+        })
+        return reply
+    }
+	
+
+
+ 
+	
+}
+export const handleUpdateFineStatus = async (req: RequestPayFine , reply: FastifyReply) => {
+	
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
+
+		
+		await service_business.putFineStatus(req.body,info_current_user.username, info_current_user.password).then((response) =>{
+
+
+			switch(response){
+				case 'ok':
+					reply = reply.code(200).send("successful payment")
+					return  reply
+		
+			    case 'payment not true':
+					reply = reply.code(400).send("doesn't match payment")
+					return  reply
+		    	case 'already payed':
+		  			reply = reply.code(400).send("already payed")
+					return  reply
+				case 'not exists fine':
+					reply = reply.code(400).send("not correct fine object")
+					return  reply	
+				case 'error':
+					reply = reply.code(500).send("Server")
+					return  reply
+			}
+
+		 })
+        
+    }
+    else {
+        reply = reply.code(400).send({
+            problem: "oy no"
+        })
+        return reply
+    }
+	
+
+
+ 
+	
+}
+
+
+
 
 export default {
+	handleUpdateFineStatus,
 	handleGetUnfoAdboutCar,
 	handleGetInfoAboutPerson,
-	handleGetProtocol
+	handleGetProtocol,
+	handleGetArticle,
+	handlePostAccConnection
 }

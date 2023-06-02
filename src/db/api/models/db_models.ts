@@ -7,7 +7,8 @@ export type area = {
 export type article = {
     article_id: string,
     description: string,
-    price : {0: {value: number}, 1: {value: number}}
+    price : {0: {value: number}, 1: {value: number}},
+    deprivation_months: {0: {value: number}, 1: {value: number}}
 }
 export type camera = {
     camera_id: string,
@@ -83,4 +84,15 @@ export type fine = {
     date_end: Date,
     date_payment: Date,
     sum: number
+}
+
+
+export type currentId = {
+    currval: number
+}
+
+export type typeOfdbAnswerOnFinePay = 'not exists fine' | 'already payed' | 'payment not true' | 'error' | 'ok';
+   
+export type dbAnswerOnFinePay ={
+    paymentfine: typeOfdbAnswerOnFinePay
 }

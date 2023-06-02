@@ -1,6 +1,6 @@
 
 import { QueryTypes, Sequelize } from 'sequelize';
-import { articles, car_user,  fine,  importantInfoAboutCar, infoAboutPerson } from "./models/db_models"
+import { article, articles, car_user,  fine,  importantInfoAboutCar, infoAboutPerson } from "./models/db_models"
 import { protocol } from '../../services/models';
 import { dbconnectionPoliceman } from '../connect';
 
@@ -256,6 +256,20 @@ export async function dbCheckEmail(sequelize: Sequelize, email: string) {
     return response;
 }
 
+
+
+export async function dbgetArticles(sequelize: Sequelize) {
+
+    const response: article[] = await sequelize.query(
+        'SELECT * ' +
+        ' FROM article ', { 
+            type: QueryTypes.SELECT 
+        }
+
+    )
+    
+    return response;
+}
 
 
 

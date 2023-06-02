@@ -44,3 +44,25 @@ export async function dbpostPersonForAccount(sequelize: Sequelize, username: str
 
     return response;
 }
+
+export async function dbpostNewPersonToAccount(sequelize: Sequelize, username: string,  passport_number: number) {
+    
+    const response =  await sequelize.query(
+        'INSERT into account_to_person (username, passport_number) '+
+        'values(:username, :passport_number)',
+        {
+        replacements: { 
+            passport_number: passport_number,
+            username: username
+
+        },
+        type: QueryTypes.INSERT
+        } 
+
+    ) ;
+
+    console.log(response)
+
+
+    return response;
+}

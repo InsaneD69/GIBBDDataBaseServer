@@ -55,7 +55,6 @@ export type RequestDeleteCitizen = FastifyRequest<{
 export type RequestPostProtocol = FastifyRequest<{
     Body:{
     // from protocol
-    case_id: number
     vin: string,
     passport_number: string,
     date_of_case: string,
@@ -104,8 +103,24 @@ export type RequestPostProtocol = FastifyRequest<{
 }>;
 
 
+export type RequestPostAccConn = FastifyRequest<{
 
+    Body:{
 
+        passport_number: number
+
+    }
+
+}>
+
+export type RequestPayFine = FastifyRequest<{
+
+    Body:{
+        case_id: number,
+        payment: number
+    }
+
+}>
 
 // export type RequestWithIdArticle = FastifyRequest<{
 // 	Params: { id: string };

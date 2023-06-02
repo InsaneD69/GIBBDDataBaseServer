@@ -1,11 +1,13 @@
 
-import { article, importantInfoAboutCar_plus_car_user, person, protocol } from './models';
-import { dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle, dbgetInfoAboutProtocolFine } from '../db/api/select_data'
-import { articles, car_user, fine, importantInfoAboutCar, infoAboutPerson } from '../db/api/models/db_models';
-import { dbconnectionPoliceman, dbconnectionPolicemanClient } from '../db/connect';
+import { articleInfo, dataForAddPerson, dataForPayFine, importantInfoAboutCar_plus_car_user, newProtocol, person, protocol } from './models';
+import { dbgetArticles, dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle, dbgetInfoAboutProtocolFine } from '../db/api/select_data'
+import { article, articles, car_user, dbAnswerOnFinePay, fine, importantInfoAboutCar, infoAboutPerson, typeOfdbAnswerOnFinePay } from '../db/api/models/db_models';
+import { dbconnectionCitizenClient, dbconnectionPoliceman, dbconnectionPolicemanClient } from '../db/connect';
 import { Md5 } from 'ts-md5';
 import { Sequelize } from 'sequelize';
 import { dbCreateProtocol } from '../db/api/transactions';
+import { dbpostPersonForAccount } from '../db/api/insert_data';
+import { dbupdateFineStatus } from '../db/api/update_data';
 
 
 // export const getArticles = async (): Promise<article[]> => {
@@ -25,6 +27,57 @@ import { dbCreateProtocol } from '../db/api/transactions';
 
 
 // 	});
+export const getArticles = async (username: string, password: string): Promise<Array<articleInfo>> => {
+	console.log("Im in service");
+
+	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
+	const response: article[] = await dbgetArticles(sequelize);
+	// console.log("get from select")
+	// console.log(response)
+	let resp_art: Array<articleInfo> = [];
+	response.forEach((elem) => {
+
+		let price: {
+			start: number,
+			end: number
+		} | null;
+
+		let deprivation_months: {
+			start: number,
+			end: number
+		} | null;
+
+		if (elem.price === null) {
+			price = null
+		} else {
+			price = {
+				start: elem.price[0].value,
+				end: elem.price[1].value
+			}
+		}
+
+		if (elem.deprivation_months === null) {
+			deprivation_months = null
+		} else {
+			deprivation_months = {
+				start: elem.deprivation_months[0].value,
+				end: elem.deprivation_months[1].value
+			}
+		}
+		resp_art.push({
+			article_id: elem.article_id,
+			description: elem.description,
+			price: price,
+			deprivation_months: deprivation_months
+		})
+	});
+
+
+	// console.log("resp_art")
+	// console.log(resp_art)
+
+	return resp_art
+}
 
 // 	return resp_art
 // }
@@ -70,6 +123,8 @@ export const getInfoAboutPerson = async (passport_number: string | undefined, dr
 
 	let response_person: infoAboutPerson[];
 
+
+
 	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
 
 	if ((passport_number === undefined || passport_number === null || passport_number === '') && driver_license !== undefined) {
@@ -89,11 +144,22 @@ export const getInfoAboutPerson = async (passport_number: string | undefined, dr
 }
 
 export const getInfoAboutProtocol = async (case_id: number | undefined, vin: string | undefined,
-	police_id: string | undefined, passport_number: string | undefined, username: string, password: string): Promise<any> => {
+	police_id: string | undefined, passport_number: string | undefined, username: string, password: string, whoami: "policeman"| "citizen" | "administrator"): Promise<any> => {
 
 	let response_protocol: protocol[];
 
-	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
+	let sequelize: Sequelize;
+	if(whoami === 'policeman'){
+	
+		sequelize=new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
+
+	}else if(whoami === 'citizen'){
+		sequelize=new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
+	} else{
+		return "no perm"
+	}
+
+	
 
 	if (case_id !== undefined && case_id !== null && case_id > 0) {
 
@@ -103,29 +169,31 @@ export const getInfoAboutProtocol = async (case_id: number | undefined, vin: str
 
 		response_protocol = await dbgetInfoAboutProtocol(sequelize, passport_number, "passport_number");
 
-	} else  if (vin !== undefined && vin !== null && vin !== '') {
+	} else if (vin !== undefined && vin !== null && vin !== '') {
 
 		response_protocol = await dbgetInfoAboutProtocol(sequelize, vin, "vin");
 
-	} else  if (police_id !== undefined && police_id !== null && police_id !== '') {
+	} else if (police_id !== undefined && police_id !== null && police_id !== '') {
 
 		response_protocol = await dbgetInfoAboutProtocol(sequelize, police_id, "police_id");
-	} else { console.log("im i else")
-	return "No" }
+	} else {
+		console.log("im i else")
+		return "No"
+	}
 
-	
 
-		 for(let i =0;i<response_protocol.length;i++ ) {
 
-			const responce_art: articles[] = await dbgetInfoAboutProtocolArticle(sequelize, response_protocol[i].case_id);
-			response_protocol[i].articles=responce_art
+	for (let i = 0; i < response_protocol.length; i++) {
 
-			const responce_fine: fine[] = await dbgetInfoAboutProtocolFine(sequelize, response_protocol[i].case_id);
-			response_protocol[i].fines=responce_fine
-			
-		}
+		const responce_art: articles[] = await dbgetInfoAboutProtocolArticle(sequelize, response_protocol[i].case_id);
+		response_protocol[i].articles = responce_art
 
-  
+		const responce_fine: fine[] = await dbgetInfoAboutProtocolFine(sequelize, response_protocol[i].case_id);
+		response_protocol[i].fines = responce_fine
+
+	}
+
+
 	console.log(response_protocol)
 
 
@@ -133,7 +201,7 @@ export const getInfoAboutProtocol = async (case_id: number | undefined, vin: str
 }
 
 
-export const postNewProtocol = async (protocol: protocol, username: string, password: string): Promise<"ok"| "not ok"> => {
+export const postNewProtocol = async (protocol: newProtocol, username: string, password: string): Promise<"ok" | "not ok"> => {
 
 	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
 
@@ -141,10 +209,35 @@ export const postNewProtocol = async (protocol: protocol, username: string, pass
 	const response = await dbCreateProtocol(sequelize, protocol);
 
 
-  
-	
+
+
 
 	return "ok";
+}
+
+
+export const postNewAccConnection = async (data: dataForAddPerson, username: string, password: string): Promise<"ok" | "not ok"> => {
+
+	const sequelize = new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
+
+
+	const response = await dbpostPersonForAccount(sequelize,username, data.passport_number);
+
+
+	return "ok";
+}
+
+export const putFineStatus = async (data: dataForPayFine, username: string, password: string): Promise<typeOfdbAnswerOnFinePay> => {
+
+	const sequelize = new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
+
+
+	const response: dbAnswerOnFinePay[] = await dbupdateFineStatus(sequelize,data.case_id,data.payment);
+
+	
+	return response[0].paymentfine
+	
+	
 }
 
 export default {
@@ -152,6 +245,8 @@ export default {
 	getInfoAboutCar,
 	getInfoAboutPerson,
 	getInfoAboutProtocol,
-	postNewProtocol
-
+	postNewProtocol,
+	getArticles,
+	postNewAccConnection, 
+	putFineStatus
 }
