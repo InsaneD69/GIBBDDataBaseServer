@@ -181,3 +181,11 @@ export type RequestDeleteComplaint = FastifyRequest<{
     }
 
 }>
+
+export type RequestDeleteProtocol = FastifyRequest<{
+
+    Body:{
+        case_id: number
+    }
+
+}>

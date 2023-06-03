@@ -51,9 +51,9 @@ export async function dbpostNewPersonToAccount(sequelize: Sequelize, username: s
 export async function dbpostNewComplaint(sequelize: Sequelize, newCompl: newComplaint) {
     
     const response =  await sequelize.query(
-        'INSERT into account_to_person '+
-        '(case_id, passport_number, full_justification, was_a_driver, reason_text) '+
-        'values (:case_id, :passport_number, :full_justification, :was_a_driver, :reason_text)',
+        'INSERT into complaint '+
+        '(case_id, passport_number, full_justification,date_of_submission, was_a_driver, reason_text) '+
+        'values (:case_id, :passport_number, :full_justification, (SELECT CURRENT_DATE), :was_a_driver, :reason_text)',
         {
         replacements: { 
             case_id: newCompl.case_id,

@@ -1,0 +1,21 @@
+{"background.enabled": true,
+    "background.loop": false,
+    "background.useDefault": false,
+    "background.useFront": false,
+    "background.style": {
+        "content": "''",
+        "pointer-events": "none",
+        "position": "absolute",
+        "z-index": "99999",
+        "height": "100%",
+        "width": "100%",
+        "background-position": "93% 100%;",
+        
+        "background-size": "15%",
+        "background-repeat": "no-repeat",
+        "opacity": 0.3
+    },
+    "background.customImages": [
+        "file:///home/kali/Downloads/pngegg.png"
+    ]
+}

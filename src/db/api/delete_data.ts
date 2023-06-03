@@ -91,8 +91,7 @@ export async function dbDeleteComplaint(sequelize: Sequelize,complaint_id: numbe
                 type: QueryTypes.DELETE
             }
 
-        )
-
+        );
         return 'ok';
 
     }
@@ -101,5 +100,6 @@ export async function dbDeleteComplaint(sequelize: Sequelize,complaint_id: numbe
         console.log(err);
         return 'error'
     }
+   
 
 }

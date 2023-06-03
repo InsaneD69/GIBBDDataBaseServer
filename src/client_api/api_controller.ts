@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { complaint, importantInfoAboutCar } from "../db/api/models/db_models";
 import { service_business } from "../services";
-import { RequestCar, RequestDeleteAccConn, RequestDeleteComplaint, RequestGetComplaint, RequestPayFine, RequestPerson, RequestPostAccConn, RequestPostComplaint, RequestPostProtocol, RequestProtocol, RequestToken, RequestUpdateComplaint } from "./request_type";
+import { RequestCar, RequestDeleteAccConn, RequestDeleteComplaint, RequestDeleteProtocol, RequestGetComplaint, RequestPayFine, RequestPerson, RequestPostAccConn, RequestPostComplaint, RequestPostProtocol, RequestProtocol, RequestToken, RequestUpdateComplaint } from "./request_type";
 import { Body } from "@nestjs/common";
 import { answerOnComplaint, articleInfo, getComplaintMeth, importantInfoAboutCar_plus_car_user, newComplaint, newProtocol } from "../services/models";
 import fastify from "../app";
@@ -421,12 +421,32 @@ export const handleDeleteComplaint = async (req: RequestDeleteComplaint, reply: 
 
 		await service_business.deleteComplaint(req.body.complaint_id, info_current_user.username, info_current_user.password).then((response) => {
 
-			if (response !== 'ok') {
+			console.log("enter")
+				return reply.send(response+"\nyou deleted your beautifull complaint, dear " + info_current_user?.username).code(200);
+			
 
-				return reply.send(response);
-			} else {
-				return reply.send("you deleted your beautifull complaint, dear " + info_current_user?.username);
-			}
+		})
+
+		console.log("gg")
+	}
+	else {
+		reply = reply.code(400).send({
+			problem: "not correct account password"
+		})
+		return reply
+	}
+
+
+};
+
+export const handleDeleteProtocol = async (req: RequestDeleteProtocol, reply: FastifyReply) => {
+
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
+
+		await service_business.deleteProtocol(req.body.case_id, info_current_user.username, info_current_user.password).then((response) => {
+
+				return reply.send(response+"\nyou deleted your beautifull protocol, dear " + info_current_user?.username).code(200);
+			
 
 		})
 
@@ -442,6 +462,7 @@ export const handleDeleteComplaint = async (req: RequestDeleteComplaint, reply: 
 };
 
 export default {
+	handleDeleteProtocol,
 	handleDeleteComplaint,
 	handleUpdateFineStatus,
 	handleGetUnfoAdboutCar,
