@@ -177,14 +177,7 @@ export type RequestUpdateComplaint = FastifyRequest<{
 export type RequestDeleteComplaint = FastifyRequest<{
 
     Body:{
-
-        case_id: number,
-        passport_number: number,
-        date_of_submission: Date,
-        full_justification: boolean,
-        was_a_driver: boolean,
-        reason_text: string,
-
+        complaint_id: number
     }
 
 }>

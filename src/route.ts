@@ -103,7 +103,8 @@ export const ApiCitizenRouter = async (fastify: FastifyInstance) => {
 	fastify.get("/person", apiController.handleGetAccConnection),
 	fastify.delete("/person", apiController.handleDeleteAccConnection),
 	fastify.get("/complaint", apiController.handleGetComplaint),
-	fastify.post("/complaint", apiController.handlePostComplaint);
+	fastify.post("/complaint", apiController.handlePostComplaint),
+	fastify.delete("/complaint", apiController.handleDeleteComplaint);
 	
 
 

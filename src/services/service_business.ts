@@ -8,7 +8,7 @@ import { Sequelize } from 'sequelize';
 import { dbCreateProtocol } from '../db/api/transactions';
 
 import { dbupdateComplaintStatus, dbupdateFineStatus } from '../db/api/update_data';
-import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount } from '../db/api/delete_data';
+import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount, dbDeleteComplaint } from '../db/api/delete_data';
 import { dbpostNewComplaint, dbpostNewPersonToAccount } from '../db/api/insert_data';
 import { RequestUpdateComplaint } from '../client_api/request_type';
 
@@ -369,7 +369,27 @@ export const putComplaintStatus = async (data: answerOnComplaint, username: stri
 }
 
 
+export const deleteComplaint = async (complaint_id: number, username: string, password: string): Promise<"ok"|"error"> => {
+
+	const sequelize = new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
+
+
+	const response = await dbDeleteComplaint(sequelize, complaint_id);
+
+	switch(response){
+
+		case "ok":
+			return 'ok'
+		case "error":
+			return 'error'
+	}
+	
+	
+}
+
+
 export default {
+	deleteComplaint,
 	postNewComplaint,
 	getInfoAboutCar,
 	getInfoAboutPerson,
