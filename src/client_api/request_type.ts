@@ -59,7 +59,7 @@ export type RequestPostProtocol = FastifyRequest<{
     passport_number: string,
     date_of_case: string,
     case_address: string,
-    camera_id: string,
+    camera_id: number | null,
     case_reason: string,
     case_verdict: string,
     police_id: string,
@@ -133,6 +133,58 @@ export type RequestDeleteAccConn = FastifyRequest<{
     Body:{
 
         passport_number: number
+
+    }
+
+}>
+
+export type RequestPostComplaint = FastifyRequest<{
+
+    Body:{
+
+        case_id: number,
+        passport_number: number,
+        full_justification: boolean,
+        was_a_driver: boolean,
+        reason_text: string,
+
+
+    }
+
+}>
+
+export type RequestGetComplaint = FastifyRequest<{
+
+    Querystring:{
+        complaint_id: number | undefined,
+        case_id: number | undefined,
+        passport_number: number | undefined
+
+    }
+
+}>
+
+export type RequestUpdateComplaint = FastifyRequest<{
+
+    Body:{
+
+        complaint_id: number,
+        verdict: string,
+        verdict_boolean: string
+
+    }
+
+}>
+export type RequestDeleteComplaint = FastifyRequest<{
+
+    Body:{
+
+        case_id: number,
+        passport_number: number,
+        date_of_submission: Date,
+        full_justification: boolean,
+        was_a_driver: boolean,
+        reason_text: string,
 
     }
 

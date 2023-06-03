@@ -106,3 +106,17 @@ export type personToAccount = {
     passport_number: number
 
 }
+export type complaint = {
+    complaint_id: number, 
+    case_id: number, 
+    passport_number: number, 
+    date_of_submission: Date, 
+    date_of_review: Date, 
+    verdict: string, 
+    full_justification: boolean, 
+    was_a_driver: boolean, 
+    reason_text: string,
+    verdict_boolean:boolean , 
+    case_reason: string
+
+}

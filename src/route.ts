@@ -53,7 +53,8 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 		fastify.get("/person", apiController.handleGetInfoAboutPerson),
 		fastify.get("/protocol", apiController.handleGetProtocol),
 		fastify.get("/articles", apiController.handleGetArticle),
-	    fastify.post("/protocol", apiController.handlePostProtocol);
+	    fastify.post("/protocol", apiController.handlePostProtocol),
+		fastify.get("/complaint", apiController.handleGetComplaint);
 
 
 
@@ -99,7 +100,8 @@ export const ApiCitizenRouter = async (fastify: FastifyInstance) => {
 	fastify.post("/person", apiController.handlePostAccConnection),
 	fastify.put("/payfine", apiController.handleUpdateFineStatus),
 	fastify.get("/person", apiController.handleGetAccConnection),
-	fastify.delete("/person", apiController.handleDeleteAccConnection);
+	fastify.delete("/person", apiController.handleDeleteAccConnection),
+	fastify.get("/complaint", apiController.handleGetComplaint);
 	
 
 
@@ -149,7 +151,7 @@ export const AccountRouter = async (fastify: FastifyInstance) => {
 	fastify.addHook("onRequest", async (request: RequestWithToken, reply: FastifyReply) => {
 		
 		console.log(request.routerPath)
-		if(request.routerPath !== '/acc/citizen/register'){
+		if(request.routerPath !== '/acc/citizen'){
 				
 		
 		try {

@@ -1,13 +1,13 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { importantInfoAboutCar } from "../db/api/models/db_models";
+import { complaint, importantInfoAboutCar } from "../db/api/models/db_models";
 import { service_business } from "../services";
-import { RequestCar, RequestDeleteAccConn, RequestPayFine, RequestPerson, RequestPostAccConn, RequestPostProtocol, RequestProtocol, RequestToken } from "./request_type";
+import { RequestCar, RequestDeleteAccConn, RequestGetComplaint, RequestPayFine, RequestPerson, RequestPostAccConn, RequestPostProtocol, RequestProtocol, RequestToken } from "./request_type";
 import { Body } from "@nestjs/common";
-import { articleInfo, importantInfoAboutCar_plus_car_user } from "../services/models";
+import { articleInfo, getComplaintMeth, importantInfoAboutCar_plus_car_user, newProtocol } from "../services/models";
 import fastify from "../app";
 import { info_current_user } from "../route";
 import { testCredentialsToDB } from "../db/api/test_connection";
-
+import { reqPostProtocolValidator } from '../validators';
 
 
 export const handleGetArticle = async (req: FastifyRequest, reply: FastifyReply) => {
@@ -72,10 +72,7 @@ export const handleGetUnfoAdboutCar = async (req: RequestCar, reply: FastifyRepl
 		}
 	}
 	else {
-		reply = reply.code(500).send({
-			problem: "oy no"
-		})
-		return reply
+		return reply.code(500).send("Server Error")
 	}
 
 
@@ -111,24 +108,21 @@ export const handleGetInfoAboutPerson = async (req: RequestPerson, reply: Fastif
 		return reply
 	}
 
-
-
-
-
 }
 
 export const handleGetProtocol = async (req: RequestProtocol, reply: FastifyReply) => {
 
 
+	
 	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
 
 		console.log(req.query.case_id)
 
-		const response = await service_business.getInfoAboutProtocol(req.query.case_id, req.query.vin, req.query.police_id, req.query.passport_number,
+		const response  = await service_business.getInfoAboutProtocol(req.query.case_id, req.query.vin, req.query.police_id, req.query.passport_number,
 			info_current_user.username, info_current_user.password, info_current_user.whoami);
 
 		console.log("response in controller")
-		console.log(response)
+		console.log(response.length)
 		if (response === "No") {
 
 			reply = reply.code(400).send({
@@ -137,10 +131,7 @@ export const handleGetProtocol = async (req: RequestProtocol, reply: FastifyRepl
 			return reply
 
 		} else if (response === "no perm") {
-			reply = reply.code(400).send({
-				problem: "Dont`t have permissions"
-			})
-			return reply
+			return reply.code(403).send("Dont`t have permissions")
 		}
 		else {
 
@@ -163,11 +154,15 @@ export const handleGetProtocol = async (req: RequestProtocol, reply: FastifyRepl
 
 export const handlePostProtocol = async (req: RequestPostProtocol, reply: FastifyReply) => {
 
+
+	const newProto: newProtocol = reqPostProtocolValidator(req.body);
+
+
 	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
 
 		console.log(req.body)
 
-		const response = await service_business.postNewProtocol(req.body, info_current_user.username, info_current_user.password);
+		const response = await service_business.postNewProtocol(newProto, info_current_user.username, info_current_user.password);
 
 		if (response !== "ok") {
 
@@ -298,7 +293,7 @@ export const handleGetAccConnection = async (req: FastifyRequest, reply: Fastify
 
 export const handleDeleteAccConnection = async (req: RequestDeleteAccConn, reply: FastifyReply) => {
 
-	if (req.headers.password !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
 
 		await service_business.deleteAccToPersonConnect(req.body.passport_number, info_current_user.username, info_current_user.password).then((response) => {
 
@@ -326,7 +321,36 @@ export const handleDeleteAccConnection = async (req: RequestDeleteAccConn, reply
 
 };
 
+export const handleGetComplaint = async (req: RequestGetComplaint, reply: FastifyReply) => {
 
+	
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
+
+		const complM: getComplaintMeth = req.query;
+
+		const response: complaint[]|"no perm"|  "The correct value is not presented " = await service_business.getInfoComplaint(complM,info_current_user.username, info_current_user.password, info_current_user.whoami);
+
+		
+		if (response === 'The correct value is not presented ') {
+			return  reply.code(400).send(response)
+
+		} else if (response === "no perm") {
+			return reply.code(403).send("Dont`t have permissions")
+		}
+		else {
+			return response;
+		}
+	}
+	else {
+		return reply.code(500).send("Server Error")
+		
+	}
+
+
+
+
+
+}
 
 
 
@@ -340,5 +364,6 @@ export default {
 	handlePostAccConnection,
 	handlePostProtocol,
 	handleGetAccConnection,
-	handleDeleteAccConnection
+	handleDeleteAccConnection,
+	handleGetComplaint
 }

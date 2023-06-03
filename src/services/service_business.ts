@@ -1,14 +1,15 @@
 
-import { articleInfo, dataAboutConnectedPerson, dataForAddPerson, dataForPayFine, importantInfoAboutCar_plus_car_user, newProtocol, person, protocol } from './models';
-import { dbgetAcc_ToPerson, dbgetArticles, dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle, dbgetInfoAboutProtocolFine } from '../db/api/select_data'
-import { article, articles, car_user, dbAnswerOnFinePay, fine, importantInfoAboutCar, infoAboutPerson, personToAccount, typeOfdbAnswerOnFinePay } from '../db/api/models/db_models';
+import { articleInfo, dataAboutConnectedPerson, dataForAddPerson, dataForPayFine, getComplaintMeth, importantInfoAboutCar_plus_car_user, newProtocol, person, protocol } from './models';
+import { dbgetAcc_ToPerson, dbgetArticles, dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutComplaint, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle, dbgetInfoAboutProtocolFine } from '../db/api/select_data'
+import { article, articles, car_user, complaint, dbAnswerOnFinePay, fine, importantInfoAboutCar, infoAboutPerson, personToAccount, typeOfdbAnswerOnFinePay } from '../db/api/models/db_models';
 import { dbconnectionCitizenClient, dbconnectionPoliceman, dbconnectionPolicemanClient } from '../db/connect';
 import { Md5 } from 'ts-md5';
 import { Sequelize } from 'sequelize';
 import { dbCreateProtocol } from '../db/api/transactions';
-import { dbpostPersonForAccount } from '../db/api/insert_data';
+
 import { dbupdateFineStatus } from '../db/api/update_data';
 import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount } from '../db/api/delete_data';
+import { dbpostNewPersonToAccount } from '../db/api/insert_data';
 
 
 // export const getArticles = async (): Promise<article[]> => {
@@ -178,8 +179,7 @@ export const getInfoAboutProtocol = async (case_id: number | undefined, vin: str
 
 		response_protocol = await dbgetInfoAboutProtocol(sequelize, police_id, "police_id");
 	} else {
-		console.log("im i else")
-		return "No"
+		return "The correct value is not presented "
 	}
 
 
@@ -221,7 +221,7 @@ export const postNewAccConnection = async (data: dataForAddPerson, username: str
 	const sequelize = new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
 
 
-	const response = await dbpostPersonForAccount(sequelize,username, data.passport_number);
+	const response = await dbpostNewPersonToAccount(sequelize,username, data.passport_number);
 
 
 	return "ok";
@@ -305,6 +305,44 @@ export const getInfoLinkPerson = async ( username: string, password: string): Pr
 }
 
 
+
+
+export const getInfoComplaint = async (using_var:getComplaintMeth, username: string, password: string, whoami: "policeman"| "citizen" | "administrator"): Promise<complaint[] |"no perm"|  "The correct value is not presented "> => {
+
+	let response_complaint: complaint[];
+
+	let sequelize: Sequelize;
+	if(whoami === 'policeman'){
+	
+		sequelize=new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
+
+	}else if(whoami === 'citizen'){
+		sequelize=new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
+	} else{
+		return "no perm"
+	}
+
+	
+
+	if (using_var.case_id !== undefined && using_var.case_id !== null && using_var.case_id > 0) {
+
+		response_complaint = await dbgetInfoAboutComplaint(sequelize, using_var.case_id, "case_id");
+
+	} else if (using_var.passport_number !== undefined && using_var.passport_number !== null && using_var.passport_number > 0) {
+
+		response_complaint = await dbgetInfoAboutComplaint(sequelize, using_var.passport_number, "passport_number");
+
+	} else if (using_var.complaint_id !== undefined && using_var.complaint_id !== null && using_var.complaint_id > 0) {
+
+		response_complaint = await dbgetInfoAboutComplaint(sequelize, using_var.complaint_id, "complaint_id");
+
+	} else {
+		return "The correct value is not presented "
+	}
+
+	return response_complaint;
+}
+
 export default {
 
 	getInfoAboutCar,
@@ -315,5 +353,6 @@ export default {
 	postNewAccConnection, 
 	putFineStatus,
 	deleteAccToPersonConnect,
-	getInfoLinkPerson 
+	getInfoLinkPerson,
+	getInfoComplaint
 }

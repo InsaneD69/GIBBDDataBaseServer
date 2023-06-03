@@ -1,4 +1,5 @@
 import { QueryTypes, Sequelize } from "sequelize";
+import { newComplaint, newProtocol } from "../../services/models";
 
 
 export async function dbpostNewCitizen(sequelize: Sequelize, username: string, password: string, email: string, phone_number: number) {
@@ -24,15 +25,17 @@ export async function dbpostNewCitizen(sequelize: Sequelize, username: string, p
 
     return response;
 }
-export async function dbpostPersonForAccount(sequelize: Sequelize, username: string, passport_number: number) {
+
+export async function dbpostNewPersonToAccount(sequelize: Sequelize, username: string,  passport_number: number) {
     
     const response =  await sequelize.query(
         'INSERT into account_to_person (username, passport_number) '+
-        'values(:ins_username,:ins_passport_number)',
+        'values(:username, :passport_number)',
         {
         replacements: { 
-            ins_username:username,
-            ins_passport_number: passport_number
+            passport_number: passport_number,
+            username: username
+
         },
         type: QueryTypes.INSERT
         } 
@@ -45,15 +48,19 @@ export async function dbpostPersonForAccount(sequelize: Sequelize, username: str
     return response;
 }
 
-export async function dbpostNewPersonToAccount(sequelize: Sequelize, username: string,  passport_number: number) {
+export async function dbpostNewComplaint(sequelize: Sequelize, newCompl: newComplaint) {
     
     const response =  await sequelize.query(
-        'INSERT into account_to_person (username, passport_number) '+
-        'values(:username, :passport_number)',
+        'INSERT into account_to_person '+
+        '(case_id, passport_number, full_justification, was_a_driver, reason_text) '+
+        'values (:case_id, :passport_number, :full_justification, :was_a_driver, :reason_text)',
         {
         replacements: { 
-            passport_number: passport_number,
-            username: username
+            case_id: newCompl.case_id,
+            passport_number: newCompl.passport_number,
+            full_justification: newCompl.full_justification,
+            was_a_driver: newCompl.was_a_driver,
+            reason_text: newCompl.reason_text,
 
         },
         type: QueryTypes.INSERT

@@ -1,6 +1,6 @@
 
 import { QueryTypes, Sequelize } from 'sequelize';
-import { article, articles, car_user,  fine,  importantInfoAboutCar, infoAboutPerson, personToAccount } from "./models/db_models"
+import { article, articles, car_user,  complaint,  fine,  importantInfoAboutCar, infoAboutPerson, personToAccount } from "./models/db_models"
 import { protocol } from '../../services/models';
 import { dbconnectionPoliceman } from '../connect';
 
@@ -137,8 +137,6 @@ export async function dbgetInfoAboutProtocol(sequelize: Sequelize, using_var: nu
         }
 
     )
-    console.log("response in select")
-    console.log(response)
     
     
     return response;
@@ -157,9 +155,6 @@ export async function dbgetInfoAboutProtocolArticle(sequelize: Sequelize, case_i
         }
 
     )
-	console.log("response in selectart")
-
-    console.log(response)
    
     return response;
 };
@@ -177,9 +172,8 @@ export async function dbgetInfoAboutProtocolFine(sequelize: Sequelize, case_id: 
         }
 
     )
-	console.log("response in selectart")
-
-    console.log(response)
+	
+    
    
     return response;
 };
@@ -268,6 +262,24 @@ export async function dbgetAcc_ToPerson(sequelize: Sequelize) {
 }
 
 
+export async function dbgetInfoAboutComplaint(sequelize: Sequelize, using_var: number, whatVar: "case_id" | "complaint_id" | "passport_number" | "passport_number") {
+   
+ 
+    const response: complaint[] = await sequelize.query(
+        'SELECT  complaint_id, case_id, passport_number, ' +
+        'date_of_submission, date_of_review, verdict, full_justification, was_a_driver, reason_text, verdict_boolean, protocol.case_reason ' +
+        ' FROM complaint ' +
+        ' join protocol using(case_id) ' +
+        'WHERE '+whatVar+' = :using_var; ', {
+            replacements: { 
+                
+                using_var :using_var
+            }, 
+            type: QueryTypes.SELECT 
+        }
 
-
-
+    )
+    
+    
+    return response;
+}
