@@ -128,3 +128,12 @@ export type RequestPayFine = FastifyRequest<{
 
 }>
 
+export type RequestDeleteAccConn = FastifyRequest<{
+
+    Body:{
+
+        passport_number: number
+
+    }
+
+}>

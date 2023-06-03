@@ -98,7 +98,9 @@ export const ApiCitizenRouter = async (fastify: FastifyInstance) => {
 	fastify.get("/protocol", apiController.handleGetProtocol),
 	fastify.post("/person", apiController.handlePostAccConnection),
 	fastify.put("/payfine", apiController.handleUpdateFineStatus),
-	fastify.get("/person", apiController.handleGetAccConnection);
+	fastify.get("/person", apiController.handleGetAccConnection),
+	fastify.delete("/person", apiController.handleDeleteAccConnection);
+	
 
 
 };
@@ -177,10 +179,8 @@ export const AccountRouter = async (fastify: FastifyInstance) => {
 
 	
 	fastify.post("/citizen",accController.handleRegisterCitizen),
-
 	fastify.post("/logout",accController.handleLogout),
-	fastify.delete("/citizen",accController.handleDeleteCitizen)
-	//fastify.delete("/citizen",accController.);
+	fastify.delete("/citizen",accController.handleDeleteCitizen);
 	
 
 };
