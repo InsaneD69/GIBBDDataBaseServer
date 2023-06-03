@@ -1,6 +1,6 @@
 
 import { QueryTypes, Sequelize } from 'sequelize';
-import { article, articles, car_user,  fine,  importantInfoAboutCar, infoAboutPerson } from "./models/db_models"
+import { article, articles, car_user,  fine,  importantInfoAboutCar, infoAboutPerson, personToAccount } from "./models/db_models"
 import { protocol } from '../../services/models';
 import { dbconnectionPoliceman } from '../connect';
 
@@ -256,9 +256,9 @@ export async function dbgetArticles(sequelize: Sequelize) {
 
 export async function dbgetAcc_ToPerson(sequelize: Sequelize) {
 
-    const response: article[] = await sequelize.query(
-        'SELECT * ' +
-        ' FROM article ', { 
+    const response: personToAccount[] = await sequelize.query(
+        'SELECT person_name, surname, patronymic, passport_number ' +
+        ' FROM person ', { 
             type: QueryTypes.SELECT 
         }
 

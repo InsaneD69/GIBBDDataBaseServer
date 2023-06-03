@@ -97,3 +97,12 @@ export type typeOfdbAnswerOnFinePay = 'not exists fine' | 'already payed' | 'pay
 export type dbAnswerOnFinePay ={
     paymentfine: typeOfdbAnswerOnFinePay
 }
+
+
+export type personToAccount = {
+    person_name: string,
+    surname: string,
+    patronymic: string,
+    passport_number: number
+
+}

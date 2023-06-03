@@ -169,8 +169,6 @@ export const handlePostProtocol = async (req:  RequestPostProtocol, reply: Fasti
 
         const response  = await service_business.postNewProtocol(req.body,info_current_user.username, info_current_user.password);
 
-
-
 		if(response !== "ok"){
 			
 			reply = reply.code(500).send({
@@ -276,10 +274,27 @@ export const handleUpdateFineStatus = async (req: RequestPayFine , reply: Fastif
 }
 
 
+export const handleGetAccConnection = async (req:  FastifyRequest, reply: FastifyReply) => {
+	
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
 
+		console.log(req.body)
+		await service_business.getInfoLinkPerson(info_current_user.username, info_current_user.password).then((response) =>{
 
+			console.log(response)
+			return  reply.send(response);
 
+		 })
+        
+    }
+    else {
+        reply = reply.code(400).send({
+            problem: "oy no"
+        })
+        return reply
+    }	
 
+}
 export default {
 	handleUpdateFineStatus,
 	handleGetUnfoAdboutCar,
@@ -287,5 +302,6 @@ export default {
 	handleGetProtocol,
 	handleGetArticle,
 	handlePostAccConnection,
-	handlePostProtocol
+	handlePostProtocol,
+	handleGetAccConnection
 }

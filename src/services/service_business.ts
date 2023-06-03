@@ -1,7 +1,7 @@
 
-import { articleInfo, dataForAddPerson, dataForPayFine, importantInfoAboutCar_plus_car_user, newProtocol, person, protocol } from './models';
-import { dbgetArticles, dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle, dbgetInfoAboutProtocolFine } from '../db/api/select_data'
-import { article, articles, car_user, dbAnswerOnFinePay, fine, importantInfoAboutCar, infoAboutPerson, typeOfdbAnswerOnFinePay } from '../db/api/models/db_models';
+import { articleInfo, dataAboutConnectedPerson, dataForAddPerson, dataForPayFine, importantInfoAboutCar_plus_car_user, newProtocol, person, protocol } from './models';
+import { dbgetAcc_ToPerson, dbgetArticles, dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle, dbgetInfoAboutProtocolFine } from '../db/api/select_data'
+import { article, articles, car_user, dbAnswerOnFinePay, fine, importantInfoAboutCar, infoAboutPerson, personToAccount, typeOfdbAnswerOnFinePay } from '../db/api/models/db_models';
 import { dbconnectionCitizenClient, dbconnectionPoliceman, dbconnectionPolicemanClient } from '../db/connect';
 import { Md5 } from 'ts-md5';
 import { Sequelize } from 'sequelize';
@@ -282,6 +282,28 @@ export const deleteAccToPersonConnect = async (passport_number: number, username
 }
 
 
+export const getInfoLinkPerson = async ( username: string, password: string): Promise<dataAboutConnectedPerson[]> => {
+
+	const sequelize = new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
+
+
+	const response: personToAccount[] = await dbgetAcc_ToPerson(sequelize);
+
+
+	let answerWithLinkPerson: Array<dataAboutConnectedPerson> = [];
+	response.forEach((one_person)=>{
+		answerWithLinkPerson.push({
+			name: one_person.person_name,
+			surname: one_person.surname,
+			patronymic: one_person.patronymic,
+			passport_number: one_person.passport_number
+		})
+	})
+	
+	return answerWithLinkPerson;
+	
+}
+
 
 export default {
 
@@ -292,5 +314,6 @@ export default {
 	getArticles,
 	postNewAccConnection, 
 	putFineStatus,
-	deleteAccToPersonConnect
+	deleteAccToPersonConnect,
+	getInfoLinkPerson 
 }
