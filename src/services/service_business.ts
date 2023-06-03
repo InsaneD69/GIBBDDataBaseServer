@@ -1,5 +1,5 @@
 
-import { articleInfo, dataAboutConnectedPerson, dataForAddPerson, dataForPayFine, getComplaintMeth, importantInfoAboutCar_plus_car_user, newComplaint, newProtocol, person, protocol } from './models';
+import { answerOnComplaint, articleInfo, dataAboutConnectedPerson, dataForAddPerson, dataForPayFine, getComplaintMeth, importantInfoAboutCar_plus_car_user, newComplaint, newProtocol, person, protocol } from './models';
 import { dbgetAcc_ToPerson, dbgetArticles, dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutComplaint, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle, dbgetInfoAboutProtocolFine } from '../db/api/select_data'
 import { article, articles, car_user, complaint, dbAnswerOnFinePay, fine, importantInfoAboutCar, infoAboutPerson, personToAccount, typeOfdbAnswerOnFinePay } from '../db/api/models/db_models';
 import { dbconnectionCitizenClient, dbconnectionPoliceman, dbconnectionPolicemanClient } from '../db/connect';
@@ -7,9 +7,10 @@ import { Md5 } from 'ts-md5';
 import { Sequelize } from 'sequelize';
 import { dbCreateProtocol } from '../db/api/transactions';
 
-import { dbupdateFineStatus } from '../db/api/update_data';
+import { dbupdateComplaintStatus, dbupdateFineStatus } from '../db/api/update_data';
 import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount } from '../db/api/delete_data';
 import { dbpostNewComplaint, dbpostNewPersonToAccount } from '../db/api/insert_data';
+import { RequestUpdateComplaint } from '../client_api/request_type';
 
 
 // export const getArticles = async (): Promise<article[]> => {
@@ -316,19 +317,9 @@ export const getInfoComplaint = async (using_var:getComplaintMeth, username: str
 		return "no perm"
 	}
 
-	
-
-	console.log(typeof(using_var.case_id))
-	console.log(typeof(using_var.passport_number))
-	console.log(typeof(using_var.complaint_id))
-
 	try{using_var.case_id = Number(using_var.case_id)}catch(err){}
 	try{using_var.passport_number= Number(using_var.passport_number)}catch(err){}
 	try{using_var.complaint_id= Number(using_var.complaint_id)}catch(err){}
-	console.log("dgdgfdf")
-	console.log(typeof(using_var.case_id))
-	console.log(typeof(using_var.passport_number))
-	console.log(typeof(using_var.complaint_id))
 
 	if (typeof(using_var.case_id) === "number" && using_var.case_id > 0) {
 
@@ -355,7 +346,7 @@ export const getInfoComplaint = async (using_var:getComplaintMeth, username: str
 
 export const postNewComplaint = async (complaint: newComplaint, username: string, password: string): Promise<any> => {
 
-	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
+	const sequelize = new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
 
 	const response = await dbpostNewComplaint(sequelize, complaint);
 
@@ -363,6 +354,20 @@ export const postNewComplaint = async (complaint: newComplaint, username: string
 
 	return response;
 }
+
+export const putComplaintStatus = async (data: answerOnComplaint, username: string, password: string): Promise<any> => {
+
+	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
+
+
+	const response = await dbupdateComplaintStatus(sequelize,data);
+
+	
+	return response;
+	
+	
+}
+
 
 export default {
 	postNewComplaint,
@@ -375,5 +380,6 @@ export default {
 	putFineStatus,
 	deleteAccToPersonConnect,
 	getInfoLinkPerson,
-	getInfoComplaint
+	getInfoComplaint,
+	putComplaintStatus
 }

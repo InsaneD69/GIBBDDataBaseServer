@@ -1,13 +1,13 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { complaint, importantInfoAboutCar } from "../db/api/models/db_models";
 import { service_business } from "../services";
-import { RequestCar, RequestDeleteAccConn, RequestGetComplaint, RequestPayFine, RequestPerson, RequestPostAccConn, RequestPostComplaint, RequestPostProtocol, RequestProtocol, RequestToken } from "./request_type";
+import { RequestCar, RequestDeleteAccConn, RequestGetComplaint, RequestPayFine, RequestPerson, RequestPostAccConn, RequestPostComplaint, RequestPostProtocol, RequestProtocol, RequestToken, RequestUpdateComplaint } from "./request_type";
 import { Body } from "@nestjs/common";
-import { articleInfo, getComplaintMeth, importantInfoAboutCar_plus_car_user, newComplaint, newProtocol } from "../services/models";
+import { answerOnComplaint, articleInfo, getComplaintMeth, importantInfoAboutCar_plus_car_user, newComplaint, newProtocol } from "../services/models";
 import fastify from "../app";
 import { info_current_user } from "../route";
 import { testCredentialsToDB } from "../db/api/test_connection";
-import { reqPostProtocolValidator, reqPostComplaintValidator } from '../validators';
+import { reqPostProtocolValidator, reqPostComplaintValidator, reqUpdateComplaintValidator } from '../validators';
 
 
 export const handleGetArticle = async (req: FastifyRequest, reply: FastifyReply) => {
@@ -155,7 +155,7 @@ export const handleGetProtocol = async (req: RequestProtocol, reply: FastifyRepl
 export const handlePostProtocol = async (req: RequestPostProtocol, reply: FastifyReply) => {
 
 
-	const newProto: newProtocol = reqPostProtocolValidator(req.body);
+	const newProto: newProtocol = reqPostProtocolValidator(req);
 
 
 	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
@@ -355,7 +355,7 @@ export const handleGetComplaint = async (req: RequestGetComplaint, reply: Fastif
 export const handlePostComplaint = async (req: RequestPostComplaint, reply: FastifyReply) => {
 
 
-	const newCompl: newComplaint = reqPostComplaintValidator(req.body);
+	const newCompl: newComplaint = reqPostComplaintValidator(req);
 
 
 	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
@@ -390,6 +390,36 @@ export const handlePostComplaint = async (req: RequestPostComplaint, reply: Fast
  }
 
 
+
+ export const handleUpdateComplaintStatus = async (req: RequestUpdateComplaint, reply: FastifyReply) => {
+
+   const dataForUpdateCompl: answerOnComplaint = reqUpdateComplaintValidator(req)
+
+
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
+
+
+		await service_business.putComplaintStatus(req.body, info_current_user.username, info_current_user.password).then((response) => {
+
+
+			return reply.code(200).send(response);
+
+		})
+
+	}
+	else {
+		reply = reply.code(400).send({
+			problem: "oy no"
+		})
+		return reply
+	}
+
+
+
+
+
+}
+
 export default {
 	handleUpdateFineStatus,
 	handleGetUnfoAdboutCar,
@@ -401,5 +431,6 @@ export default {
 	handleGetAccConnection,
 	handleDeleteAccConnection,
 	handleGetComplaint,
-	handlePostComplaint
+	handlePostComplaint,
+	handleUpdateComplaintStatus
 }
