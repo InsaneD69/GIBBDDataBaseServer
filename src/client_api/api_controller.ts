@@ -169,8 +169,7 @@ export const handlePostProtocol = async (req:  RequestPostProtocol, reply: Fasti
 
         const response  = await service_business.postNewProtocol(req.body,info_current_user.username, info_current_user.password);
 
-			console.log("response in controller")
-			console.log(response)
+
 
 		if(response !== "ok"){
 			

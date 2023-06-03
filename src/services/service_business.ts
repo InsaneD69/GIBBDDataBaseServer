@@ -202,18 +202,17 @@ export const getInfoAboutProtocol = async (case_id: number | undefined, vin: str
 }
 
 
-export const postNewProtocol = async (protocol: newProtocol, username: string, password: string): Promise<"ok" | "not ok"> => {
+export const postNewProtocol = async (protocol: newProtocol, username: string, password: string): Promise<any> => {
 
 	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
 
 
 	const response = await dbCreateProtocol(sequelize, protocol);
 
+	console.log(response)
 
 
-
-
-	return "ok";
+	return response;
 }
 
 

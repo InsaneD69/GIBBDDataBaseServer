@@ -147,3 +147,11 @@ export type dataForPayFine = {
     payment: number
 
 }
+
+export type dataAboutConnectedPerson = {
+    name: string,
+    surname: string,
+    patronymic: string,
+    passport_number: number
+
+}

@@ -254,6 +254,20 @@ export async function dbgetArticles(sequelize: Sequelize) {
 
 
 
+export async function dbgetAcc_ToPerson(sequelize: Sequelize) {
+
+    const response: article[] = await sequelize.query(
+        'SELECT * ' +
+        ' FROM article ', { 
+            type: QueryTypes.SELECT 
+        }
+
+    )
+    
+    return response;
+}
+
+
 
 
 

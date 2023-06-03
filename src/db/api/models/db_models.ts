@@ -87,9 +87,10 @@ export type fine = {
 }
 
 
-export type currentId = {
-    currval: number
-}
+export type currentId = [{
+    case_id: number,
+    dsada: number
+}]
 
 export type typeOfdbAnswerOnFinePay = 'not exists fine' | 'already payed' | 'payment not true' | 'error' | 'ok';
    
