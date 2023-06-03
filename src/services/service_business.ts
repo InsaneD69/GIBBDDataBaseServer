@@ -1,5 +1,5 @@
 
-import { articleInfo, dataAboutConnectedPerson, dataForAddPerson, dataForPayFine, getComplaintMeth, importantInfoAboutCar_plus_car_user, newProtocol, person, protocol } from './models';
+import { articleInfo, dataAboutConnectedPerson, dataForAddPerson, dataForPayFine, getComplaintMeth, importantInfoAboutCar_plus_car_user, newComplaint, newProtocol, person, protocol } from './models';
 import { dbgetAcc_ToPerson, dbgetArticles, dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutComplaint, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle, dbgetInfoAboutProtocolFine } from '../db/api/select_data'
 import { article, articles, car_user, complaint, dbAnswerOnFinePay, fine, importantInfoAboutCar, infoAboutPerson, personToAccount, typeOfdbAnswerOnFinePay } from '../db/api/models/db_models';
 import { dbconnectionCitizenClient, dbconnectionPoliceman, dbconnectionPolicemanClient } from '../db/connect';
@@ -9,7 +9,7 @@ import { dbCreateProtocol } from '../db/api/transactions';
 
 import { dbupdateFineStatus } from '../db/api/update_data';
 import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount } from '../db/api/delete_data';
-import { dbpostNewPersonToAccount } from '../db/api/insert_data';
+import { dbpostNewComplaint, dbpostNewPersonToAccount } from '../db/api/insert_data';
 
 
 // export const getArticles = async (): Promise<article[]> => {
@@ -120,6 +120,7 @@ export const getInfoAboutCar = async (vin: string | undefined, number: string | 
 
 	return response
 }
+
 export const getInfoAboutPerson = async (passport_number: string | undefined, driver_license: string | undefined, username: string, password: string): Promise<any> => {
 	console.log("Im in service");
 
@@ -201,7 +202,6 @@ export const getInfoAboutProtocol = async (case_id: number | undefined, vin: str
 	return response_protocol
 }
 
-
 export const postNewProtocol = async (protocol: newProtocol, username: string, password: string): Promise<any> => {
 
 	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
@@ -214,7 +214,6 @@ export const postNewProtocol = async (protocol: newProtocol, username: string, p
 
 	return response;
 }
-
 
 export const postNewAccConnection = async (data: dataForAddPerson, username: string, password: string): Promise<"ok" | "not ok"> => {
 
@@ -262,7 +261,6 @@ export const deleteCitizenAccount = async (verify_password: string, username: st
 	
 }
 
-
 export const deleteAccToPersonConnect = async (passport_number: number, username: string, password: string): Promise<"ok"|"error"> => {
 
 	const sequelize = new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
@@ -280,7 +278,6 @@ export const deleteAccToPersonConnect = async (passport_number: number, username
 	
 	
 }
-
 
 export const getInfoLinkPerson = async ( username: string, password: string): Promise<dataAboutConnectedPerson[]> => {
 
@@ -304,9 +301,6 @@ export const getInfoLinkPerson = async ( username: string, password: string): Pr
 	
 }
 
-
-
-
 export const getInfoComplaint = async (using_var:getComplaintMeth, username: string, password: string, whoami: "policeman"| "citizen" | "administrator"): Promise<complaint[] |"no perm"|  "The correct value is not presented "> => {
 
 	let response_complaint: complaint[];
@@ -324,27 +318,54 @@ export const getInfoComplaint = async (using_var:getComplaintMeth, username: str
 
 	
 
-	if (using_var.case_id !== undefined && using_var.case_id !== null && using_var.case_id > 0) {
+	console.log(typeof(using_var.case_id))
+	console.log(typeof(using_var.passport_number))
+	console.log(typeof(using_var.complaint_id))
+
+	try{using_var.case_id = Number(using_var.case_id)}catch(err){}
+	try{using_var.passport_number= Number(using_var.passport_number)}catch(err){}
+	try{using_var.complaint_id= Number(using_var.complaint_id)}catch(err){}
+	console.log("dgdgfdf")
+	console.log(typeof(using_var.case_id))
+	console.log(typeof(using_var.passport_number))
+	console.log(typeof(using_var.complaint_id))
+
+	if (typeof(using_var.case_id) === "number" && using_var.case_id > 0) {
 
 		response_complaint = await dbgetInfoAboutComplaint(sequelize, using_var.case_id, "case_id");
 
-	} else if (using_var.passport_number !== undefined && using_var.passport_number !== null && using_var.passport_number > 0) {
+	} else if (typeof(using_var.passport_number) === "number" && using_var.passport_number > 0) {
 
 		response_complaint = await dbgetInfoAboutComplaint(sequelize, using_var.passport_number, "passport_number");
 
-	} else if (using_var.complaint_id !== undefined && using_var.complaint_id !== null && using_var.complaint_id > 0) {
+	} else if (typeof(using_var.complaint_id) === "number" && using_var.complaint_id > 0) {
 
 		response_complaint = await dbgetInfoAboutComplaint(sequelize, using_var.complaint_id, "complaint_id");
 
 	} else {
+		console.log("gg")
 		return "The correct value is not presented "
 	}
+
+	console.log(response_complaint)
 
 	return response_complaint;
 }
 
-export default {
 
+export const postNewComplaint = async (complaint: newComplaint, username: string, password: string): Promise<any> => {
+
+	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
+
+	const response = await dbpostNewComplaint(sequelize, complaint);
+
+	console.log(response);
+
+	return response;
+}
+
+export default {
+	postNewComplaint,
 	getInfoAboutCar,
 	getInfoAboutPerson,
 	getInfoAboutProtocol,

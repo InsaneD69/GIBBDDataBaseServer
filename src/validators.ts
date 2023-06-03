@@ -1,5 +1,5 @@
 import { RequestPostProtocol, RequestProtocol } from "./client_api/request_type"
-import { newProtocol } from "./services/models";
+import { newComplaint, newProtocol } from "./services/models";
 
 export function reqPostProtocolValidator(req: newProtocol): newProtocol {
 
@@ -28,6 +28,20 @@ export function reqPostProtocolValidator(req: newProtocol): newProtocol {
         region_code: req.region_code,
         articles: req.articles,
         fines: req.fines
+    }
+
+    return ret;
+}
+
+
+export function reqPostComplaintValidator(req: newComplaint): newComplaint{
+
+    const ret: newComplaint = {
+        case_id: req.case_id,
+        passport_number: req.passport_number,
+        full_justification: req.full_justification,
+        was_a_driver: req.was_a_driver,
+        reason_text: req.reason_text
     }
 
     return ret;

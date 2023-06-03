@@ -172,7 +172,7 @@ export type answerOnComplaint = {
 
 
 export type getComplaintMeth = {
-        complaint_id: number | undefined,
-        case_id: number | undefined,
-        passport_number: number | undefined
+        complaint_id: number | undefined | null | '',
+        case_id: number | undefined | null | '',
+        passport_number: number | undefined | null | ''
 }

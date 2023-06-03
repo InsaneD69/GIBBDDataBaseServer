@@ -262,15 +262,15 @@ export async function dbgetAcc_ToPerson(sequelize: Sequelize) {
 }
 
 
-export async function dbgetInfoAboutComplaint(sequelize: Sequelize, using_var: number, whatVar: "case_id" | "complaint_id" | "passport_number" | "passport_number") {
+export async function dbgetInfoAboutComplaint(sequelize: Sequelize, using_var: number, whatVar: "case_id" | "complaint_id" | "passport_number") {
    
  
     const response: complaint[] = await sequelize.query(
-        'SELECT  complaint_id, case_id, passport_number, ' +
-        'date_of_submission, date_of_review, verdict, full_justification, was_a_driver, reason_text, verdict_boolean, protocol.case_reason ' +
+        'SELECT  complaint.complaint_id, complaint.case_id, complaint.passport_number, ' +
+        'complaint.date_of_submission, complaint.date_of_review, complaint.verdict, complaint.full_justification, complaint.was_a_driver, complaint.reason_text, complaint.verdict_boolean, protocol.case_reason ' +
         ' FROM complaint ' +
         ' join protocol using(case_id) ' +
-        'WHERE '+whatVar+' = :using_var; ', {
+        'WHERE complaint.'+whatVar+' = :using_var; ', {
             replacements: { 
                 
                 using_var :using_var

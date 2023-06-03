@@ -1,13 +1,13 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { complaint, importantInfoAboutCar } from "../db/api/models/db_models";
 import { service_business } from "../services";
-import { RequestCar, RequestDeleteAccConn, RequestGetComplaint, RequestPayFine, RequestPerson, RequestPostAccConn, RequestPostProtocol, RequestProtocol, RequestToken } from "./request_type";
+import { RequestCar, RequestDeleteAccConn, RequestGetComplaint, RequestPayFine, RequestPerson, RequestPostAccConn, RequestPostComplaint, RequestPostProtocol, RequestProtocol, RequestToken } from "./request_type";
 import { Body } from "@nestjs/common";
-import { articleInfo, getComplaintMeth, importantInfoAboutCar_plus_car_user, newProtocol } from "../services/models";
+import { articleInfo, getComplaintMeth, importantInfoAboutCar_plus_car_user, newComplaint, newProtocol } from "../services/models";
 import fastify from "../app";
 import { info_current_user } from "../route";
 import { testCredentialsToDB } from "../db/api/test_connection";
-import { reqPostProtocolValidator } from '../validators';
+import { reqPostProtocolValidator, reqPostComplaintValidator } from '../validators';
 
 
 export const handleGetArticle = async (req: FastifyRequest, reply: FastifyReply) => {
@@ -352,7 +352,42 @@ export const handleGetComplaint = async (req: RequestGetComplaint, reply: Fastif
 
 }
 
+export const handlePostComplaint = async (req: RequestPostComplaint, reply: FastifyReply) => {
 
+
+	const newCompl: newComplaint = reqPostComplaintValidator(req.body);
+
+
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
+
+		console.log(req.body)
+
+		const response = await service_business.postNewComplaint(newCompl, info_current_user.username, info_current_user.password);
+
+		if (response !== "ok") {
+
+			reply = reply.code(500).send({
+				problem: "Server error, sorry"
+			})
+			return reply
+
+		} else {
+
+			return response;
+		}
+	}
+	else {
+		reply = reply.code(400).send({
+			problem: "oy no"
+		})
+		return reply
+	}
+
+
+
+
+
+ }
 
 
 export default {
@@ -365,5 +400,6 @@ export default {
 	handlePostProtocol,
 	handleGetAccConnection,
 	handleDeleteAccConnection,
-	handleGetComplaint
+	handleGetComplaint,
+	handlePostComplaint
 }
