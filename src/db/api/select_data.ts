@@ -47,10 +47,10 @@ export async function dbgetInfoAboutCarVIN(sequelize: Sequelize, vin: string) {
 export async function dbgetInfoAboutCarGOSNUMBER(sequelize: Sequelize, number: string, region_code: number) {
 
     const response: importantInfoAboutCar[] = await sequelize.query(
-        'SELECT  car.vin, person.driver_license,car.mark_and_model,' +
-        'car.color,car.car_type,car.category,car.engine_info,car.sts_num,car.pts_num,' +
-        'person_name,person.surname,person.patronymic,' +
-        'gosnumber.number,gosnumber.region_code ' +
+        'SELECT  car.vin, person.driver_license, car.mark_and_model, ' +
+        'car.color, car.car_type, car.category, car.engine_info,car.sts_num,car.pts_num, ' +
+        'person_name, person.surname, person.patronymic, ' +
+        'gosnumber.number, gosnumber.region_code ' +
         ' FROM car' +
         ' join gosnumber on gosnumber.vin = car.vin' +
         ' join sts on car.sts_num = sts.sts_id' +
@@ -278,8 +278,29 @@ export async function dbgetInfoAboutComplaint(sequelize: Sequelize, using_var: n
             type: QueryTypes.SELECT 
         }
 
+        
     )
+    console.log("oerwoer");
     
+    return response;
+}
+
+
+export async function dbgetFinesSum(sequelize: Sequelize, passport_number: number) {
     
+    const response:any =  await sequelize.query(
+        'Select count_fines_sum(:passport_number) ',
+        {
+        replacements: { 
+            passport_number: passport_number
+        },
+        type: QueryTypes.SELECT
+        } 
+
+    );
+
+    console.log(response)
+
+
     return response;
 }

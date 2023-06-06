@@ -22,6 +22,7 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 
 			console.log(request.headers.authorization);
 
+		
 			info_current_user = fastify.jwt.decode(request.headers.authorization.replace("Bearer ",''))
 			if(info_current_user?.whoami !== 'policeman'){
 				throw new ErrorResponse("You don't have enough rights", 401);
@@ -29,7 +30,7 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 
 			let cons: boolean = false;
 
-			tokenStore.forEach((token, _username) => {
+			tokenStore.forEach((token) => {
 				console.log(token)
 				if (token === request.headers.authorization) {
 					cons = true;
@@ -53,9 +54,12 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 		fastify.get("/person", apiController.handleGetInfoAboutPerson),
 		fastify.get("/protocol", apiController.handleGetProtocol),
 		fastify.get("/articles", apiController.handleGetArticle),
-	    fastify.post("/protocol", apiController.handlePostProtocol),
 		fastify.get("/complaint", apiController.handleGetComplaint),
+
+		fastify.post("/protocol", apiController.handlePostProtocol),
+
 		fastify.put("/complaint", apiController.handleUpdateComplaintStatus),
+
 		fastify.delete("/protocol", apiController.handleDeleteProtocol);
 
 
@@ -77,7 +81,7 @@ export const ApiCitizenRouter = async (fastify: FastifyInstance) => {
 
 			let cons: boolean = false;
 
-			tokenStore.forEach((token, _username) => {
+			tokenStore.forEach((token) => {
 				console.log(token)
 				if (token === request.headers.authorization) {
 					cons = true;
@@ -99,12 +103,15 @@ export const ApiCitizenRouter = async (fastify: FastifyInstance) => {
 
 
 	fastify.get("/protocol", apiController.handleGetProtocol),
-	fastify.post("/person", apiController.handlePostAccConnection),
-	fastify.put("/payfine", apiController.handleUpdateFineStatus),
 	fastify.get("/person", apiController.handleGetAccConnection),
-	fastify.delete("/person", apiController.handleDeleteAccConnection),
 	fastify.get("/complaint", apiController.handleGetComplaint),
+
+	fastify.put("/payfine", apiController.handleUpdateFineStatus),
+
+	fastify.post("/person", apiController.handlePostAccConnection),
 	fastify.post("/complaint", apiController.handlePostComplaint),
+	
+	fastify.delete("/person", apiController.handleDeleteAccConnection),
 	fastify.delete("/complaint", apiController.handleDeleteComplaint);
 	
 
@@ -126,7 +133,7 @@ export const ApiAdministratorRouter = async (fastify: FastifyInstance) => {
 
 			let cons: boolean = false;
 
-			tokenStore.forEach((token, _username) => {
+			tokenStore.forEach((token) => {
 				console.log(token)
 				if (token === request.headers.authorization) {
 					cons = true;

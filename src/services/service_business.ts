@@ -111,7 +111,7 @@ export const getInfoAboutCar = async (vin: string | undefined, number: string | 
 	}
 	console.log(response_car[0].vin)
 
-	let response_car_user: car_user[] = await dbgetInfoAboutCar_userVIN(sequelize, response_car[0].vin)
+	const response_car_user: car_user[] = await dbgetInfoAboutCar_userVIN(sequelize, response_car[0].vin)
 
 	const response: importantInfoAboutCar_plus_car_user = {
 		car: response_car[0],
@@ -402,6 +402,28 @@ export const deleteProtocol = async (case_id: number, username: string, password
 			return 'error'
 	}
 	
+	
+}
+
+export const getSumPersonFines = async ( username: string, password: string): Promise<any> => {
+
+	const sequelize = new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
+
+
+	const response: personToAccount[] = await dbgetAcc_ToPerson(sequelize);
+
+
+	let answerWithLinkPerson: Array<dataAboutConnectedPerson> = [];
+	response.forEach((one_person)=>{
+		answerWithLinkPerson.push({
+			name: one_person.person_name,
+			surname: one_person.surname,
+			patronymic: one_person.patronymic,
+			passport_number: one_person.passport_number
+		})
+	})
+	
+	return answerWithLinkPerson;
 	
 }
 

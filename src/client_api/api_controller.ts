@@ -2,11 +2,8 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { complaint, importantInfoAboutCar } from "../db/api/models/db_models";
 import { service_business } from "../services";
 import { RequestCar, RequestDeleteAccConn, RequestDeleteComplaint, RequestDeleteProtocol, RequestGetComplaint, RequestPayFine, RequestPerson, RequestPostAccConn, RequestPostComplaint, RequestPostProtocol, RequestProtocol, RequestToken, RequestUpdateComplaint } from "./request_type";
-import { Body } from "@nestjs/common";
-import { answerOnComplaint, articleInfo, getComplaintMeth, importantInfoAboutCar_plus_car_user, newComplaint, newProtocol } from "../services/models";
-import fastify from "../app";
+import { answerOnComplaint, articleInfo, getComplaintMeth, newComplaint, newProtocol } from "../services/models";
 import { info_current_user } from "../route";
-import { testCredentialsToDB } from "../db/api/test_connection";
 import { reqPostProtocolValidator, reqPostComplaintValidator, reqUpdateComplaintValidator } from '../validators';
 
 
@@ -394,6 +391,7 @@ export const handlePostComplaint = async (req: RequestPostComplaint, reply: Fast
 	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
 
 
+		
 		await service_business.putComplaintStatus(req.body, info_current_user.username, info_current_user.password).then((response) => {
 
 
@@ -416,6 +414,7 @@ export const handlePostComplaint = async (req: RequestPostComplaint, reply: Fast
 }
 
 export const handleDeleteComplaint = async (req: RequestDeleteComplaint, reply: FastifyReply) => {
+	console.log(req)
 
 	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
 

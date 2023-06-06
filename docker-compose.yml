@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  databaseserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/home/node/app/src
+      - ./nodemon.json:/home/node/app/nodemon.json
+    container_name: databaseserver
+    expose:
+      - '3456'
+    ports:
+      - '6969:6969'
+    command: npm run dev

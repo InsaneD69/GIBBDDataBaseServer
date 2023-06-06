@@ -12,5 +12,10 @@
         "moduleResolution": "node",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true
-      }
+      },
+      "scripts": {
+        "start": "NODE_PATH=./src node src/app.ts",
+        "build": "tsc -p .",
+        "dev": "nodemon src/app.ts",
+    }
 }

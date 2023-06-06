@@ -1,5 +1,5 @@
 import { Sequelize, QueryTypes } from "sequelize";
-import { dbconnectionCitizenClient, dbconnectionAdmin } from "../connect";
+import {dbconnectionCitizenClient} from "../connect";
 import {Md5} from 'ts-md5'
 import { waitUsename } from "./models/db_models";
 
@@ -11,7 +11,6 @@ export async function testCredentialsToDB(login:string,password:string, who: "po
     console.log(who)
     const sequelize = new Sequelize(dbconnectionCitizenClient(login,Md5.hashStr(password)));
 
-   
     const response : waitUsename[]=  await sequelize.query(
         'SELECT pg_user.usename '
         +'FROM  pg_auth_members join  pg_user on  pg_auth_members.member = pg_user.usesysid '
