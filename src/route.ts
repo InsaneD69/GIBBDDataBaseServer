@@ -25,18 +25,13 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 			if(info_current_user?.whoami !== 'policeman'){
 				throw new ErrorResponse("You don't have enough rights", 401);
 			}
-
-			let cons = false;
-
-			tokenStore.forEach((token) => {
-				console.log(token)
-				if (token === request.headers.authorization) {
-					cons = true;
-				}
-			});
-			
 		
-			if (!cons) {
+			if (!tokenStore.has(request.headers.authorization)) {
+				console.log("1---------------")
+				throw new ErrorResponse("Not valid token", 401);
+				
+			} else if (tokenStore.get(request.headers.authorization) ! == info_current_user.username){
+				console.log("2---------------")
 				throw new ErrorResponse("Not valid token", 401);
 			}
 			
@@ -46,22 +41,18 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 		}
 	}),
 
-		// fastify.get("/article", articleController.handleGetArticle),
-		// fastify.get("/camera", articleController.handleGetAllInfoAboutCamera),
-		fastify.get("/car",apiController.handleGetUnfoAdboutCar),
-		fastify.get("/person", apiController.handleGetInfoAboutPerson),
-		fastify.get("/protocol", apiController.handleGetProtocol),
-		fastify.get("/articles", apiController.handleGetArticle),
-		fastify.get("/complaint", apiController.handleGetComplaint),
-		fastify.get("/unseencomplaint", apiController.handleGetInfoAboutUnseenComplaint),
+	fastify.get("/car",apiController.handleGetUnfoAdboutCar),
+	fastify.get("/person", apiController.handleGetInfoAboutPerson),
+	fastify.get("/protocol", apiController.handleGetProtocol),
+	fastify.get("/articles", apiController.handleGetArticle),
+	fastify.get("/complaint", apiController.handleGetComplaint),
+	fastify.get("/unseencomplaint", apiController.handleGetInfoAboutUnseenComplaint),
 
-		fastify.post("/protocol", apiController.handlePostProtocol),
+	fastify.post("/protocol", apiController.handlePostProtocol),
 
-		fastify.put("/complaint", apiController.handleUpdateComplaintStatus),
+	fastify.put("/complaint", apiController.handleUpdateComplaintStatus),
 
-		fastify.delete("/protocol", apiController.handleDeleteProtocol);
-
-
+	fastify.delete("/protocol", apiController.handleDeleteProtocol);
 
 };
 export const ApiCitizenRouter = async (fastify: FastifyInstance) => {
@@ -77,11 +68,10 @@ export const ApiCitizenRouter = async (fastify: FastifyInstance) => {
 			if(info_current_user?.whoami !== 'citizen'){
 				throw new ErrorResponse("You don't have enough rights", 401);
 			}
-		
 			if (!tokenStore.has(info_current_user.username)) {
 				throw new ErrorResponse("Not valid token", 401);
 				
-			} else if (tokenStore.get(info_current_user.username) ! == request.headers.authorization){
+			} else if (tokenStore.get(info_current_user.username) !== request.headers.authorization){
 				throw new ErrorResponse("Not valid token", 401);
 			}
 			
@@ -125,10 +115,9 @@ export const ApiAdministratorRouter = async (fastify: FastifyInstance) => {
 			if (!tokenStore.has(info_current_user.username)) {
 				throw new ErrorResponse("Not valid token", 401);
 				
-			} else if (tokenStore.get(info_current_user.username) ! == request.headers.authorization){
+			} else if (tokenStore.get(info_current_user.username) !== request.headers.authorization){
 				throw new ErrorResponse("Not valid token", 401);
 			}
-			
 
 		} catch (err) {
 			return reply.code(401).send(err);
@@ -162,7 +151,7 @@ export const AccountRouter = async (fastify: FastifyInstance) => {
 				if (!tokenStore.has(info_current_user.username)) {
 					throw new ErrorResponse("Not valid token", 401);
 					
-				} else if (tokenStore.get(info_current_user.username) ! == request.headers.authorization){
+				} else if (tokenStore.get(info_current_user.username) !== request.headers.authorization){
 					throw new ErrorResponse("Not valid token", 401);
 				}
 			

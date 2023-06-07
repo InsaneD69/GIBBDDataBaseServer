@@ -133,7 +133,6 @@ export const getInfoAboutProtocol = async (case_id: number | undefined, vin: str
 		return "no perm"
 	}
 
-	
 
 	if (case_id !== undefined && case_id !== null && case_id > 0) {
 
@@ -155,7 +154,6 @@ export const getInfoAboutProtocol = async (case_id: number | undefined, vin: str
 	}
 
 
-
 	for (let i = 0; i < response_protocol.length; i++) {
 
 		const responce_art: articles[] = await dbgetInfoAboutProtocolArticle(sequelize, response_protocol[i].case_id);
@@ -166,10 +164,6 @@ export const getInfoAboutProtocol = async (case_id: number | undefined, vin: str
 
 	}
 
-
-	console.log(response_protocol)
-
-
 	return response_protocol
 }
 
@@ -177,11 +171,7 @@ export const postNewProtocol = async (protocol: newProtocol, username: string, p
 
 	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
 
-
 	const response = await dbCreateProtocol(sequelize, protocol);
-
-	console.log(response)
-
 
 	return response;
 }

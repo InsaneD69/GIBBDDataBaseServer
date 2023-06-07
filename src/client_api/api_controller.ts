@@ -13,7 +13,7 @@ export const handleGetArticle = async (req: FastifyRequest, reply: FastifyReply)
 
 		await service_business.getArticles(info_current_user.username, info_current_user.password).then((response) => {
 			if (response == null) {
-		
+
 				return reply.code(500).send({
 					problem: "Server Error"
 				})
@@ -100,8 +100,6 @@ export const handleGetInfoAboutPerson = async (req: RequestPerson, reply: Fastif
 
 export const handleGetProtocol = async (req: RequestProtocol, reply: FastifyReply) => {
 
-
-
 	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
 
 		console.log(req.query.case_id)
@@ -109,8 +107,6 @@ export const handleGetProtocol = async (req: RequestProtocol, reply: FastifyRepl
 		const response = await service_business.getInfoAboutProtocol(req.query.case_id, req.query.vin, req.query.police_id, req.query.passport_number,
 			info_current_user.username, info_current_user.password, info_current_user.whoami);
 
-		console.log("response in controller")
-		console.log(response.length)
 		if (response === "No") {
 
 			reply = reply.code(400).send({
@@ -133,47 +129,31 @@ export const handleGetProtocol = async (req: RequestProtocol, reply: FastifyRepl
 		return reply
 	}
 
-
-
-
-
 }
 
 
 export const handlePostProtocol = async (req: RequestPostProtocol, reply: FastifyReply) => {
 
-
 	const newProto: newProtocol = reqPostProtocolValidator(req);
 
-
 	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
-
-		console.log(req.body)
 
 		const response = await service_business.postNewProtocol(newProto, info_current_user.username, info_current_user.password);
 
 		if (response !== "ok") {
-
-			reply = reply.code(500).send({
+			return reply.code(500).send({
 				problem: "Server error, sorry"
 			})
-			return reply
 
 		} else {
-
 			return response;
 		}
 	}
 	else {
-		reply = reply.code(400).send({
+		return reply.code(400).send({
 			problem: "oy no"
 		})
-		return reply
 	}
-
-
-
-
 
 }
 
@@ -471,8 +451,8 @@ export const handleGetSumPersonFines = async (req: RequestPerson, reply: Fastify
 				return reply
 
 			} else {
-				if((await response).count_fines_sum === null){
-					(await response).count_fines_sum =0;
+				if ((await response).count_fines_sum === null) {
+					(await response).count_fines_sum = 0;
 				}
 
 				return response;

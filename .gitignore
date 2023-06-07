@@ -1,5 +1,4 @@
 node_modules
 .env
-/https/server.crt
-/https/server.key
+https
 
