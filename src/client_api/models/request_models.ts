@@ -1,5 +1,5 @@
 import { FastifyRequest } from "fastify";
-import { articles, fine } from "../db/api/models/db_models";
+import { articles, fine } from "../../db/db_api/models/db_models";
 
 
 export type RequestCar = FastifyRequest<{
@@ -20,7 +20,7 @@ export type RequestProtocol  = FastifyRequest<{
 }>;
 export type RequestPerson= FastifyRequest<{
 	Querystring: {
-        passport_number: string | undefined;
+        passport_number: number | undefined;
         driver_license: string | undefined;
     };
 }>;

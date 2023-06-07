@@ -1,6 +1,6 @@
 import { QueryTypes, Sequelize } from "sequelize";
 import { dbAnswerOnFinePay } from "./models/db_models";
-import { answerOnComplaint } from "../../services/models";
+import { answerOnComplaint } from "../../client_api/models/response_models";
 
 export async function dbupdateFineStatus(sequelize: Sequelize, case_id: number,  payment: number) {
     

@@ -1,8 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { complaint, importantInfoAboutCar } from "../db/api/models/db_models";
-import { service_business } from "../services";
-import { RequestCar, RequestDeleteAccConn, RequestDeleteComplaint, RequestDeleteProtocol, RequestGetComplaint, RequestPayFine, RequestPerson, RequestPostAccConn, RequestPostComplaint, RequestPostProtocol, RequestProtocol, RequestToken, RequestUpdateComplaint } from "./request_type";
-import { answerOnComplaint, articleInfo, getComplaintMeth, newComplaint, newProtocol } from "../services/models";
+import { complaint, importantInfoAboutCar } from "../db/db_api/models/db_models";
+import service_business from "../services/service_business"
+import { RequestCar, RequestDeleteAccConn, RequestDeleteComplaint, RequestDeleteProtocol, RequestGetComplaint, RequestPayFine, RequestPerson, RequestPostAccConn, RequestPostComplaint, RequestPostProtocol, RequestProtocol, RequestToken, RequestUpdateComplaint } from "./models/request_models";
+import { answerOnComplaint, articleInfo, getComplaintMeth, newComplaint, newProtocol } from "./models/response_models";
 import { info_current_user } from "../route";
 import { reqPostProtocolValidator, reqPostComplaintValidator, reqUpdateComplaintValidator } from '../validators';
 
@@ -13,15 +13,12 @@ export const handleGetArticle = async (req: FastifyRequest, reply: FastifyReply)
 
 		await service_business.getArticles(info_current_user.username, info_current_user.password).then((response) => {
 			if (response == null) {
-				reply = reply.code(500).send({
+		
+				return reply.code(500).send({
 					problem: "Server Error"
 				})
-				return reply
 
 			} else {
-
-				console.log("contr have: ")
-				console.log(response)
 				return reply.send(response);
 			}
 
@@ -38,13 +35,7 @@ export const handleGetArticle = async (req: FastifyRequest, reply: FastifyReply)
 
 
 }
-// export const handleGetAllInfoAboutCamera = () => {
-// 	console.log("Im in controller")
 
-// 	return  service.getAllInfoAboutCamera() 
-
-
-// }
 
 export const handleGetUnfoAdboutCar = async (req: RequestCar, reply: FastifyReply) => {
 
@@ -79,7 +70,7 @@ export const handleGetUnfoAdboutCar = async (req: RequestCar, reply: FastifyRepl
 export const handleGetInfoAboutPerson = async (req: RequestPerson, reply: FastifyReply) => {
 
 
-	const passport_number: string | undefined = req.query.passport_number
+	const passport_number: number | undefined = req.query.passport_number
 	const driver_license: string | undefined = req.query.driver_license
 
 	console.log(passport_number)
@@ -110,12 +101,12 @@ export const handleGetInfoAboutPerson = async (req: RequestPerson, reply: Fastif
 export const handleGetProtocol = async (req: RequestProtocol, reply: FastifyReply) => {
 
 
-	
+
 	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
 
 		console.log(req.query.case_id)
 
-		const response  = await service_business.getInfoAboutProtocol(req.query.case_id, req.query.vin, req.query.police_id, req.query.passport_number,
+		const response = await service_business.getInfoAboutProtocol(req.query.case_id, req.query.vin, req.query.police_id, req.query.passport_number,
 			info_current_user.username, info_current_user.password, info_current_user.whoami);
 
 		console.log("response in controller")
@@ -315,16 +306,16 @@ export const handleDeleteAccConnection = async (req: RequestDeleteAccConn, reply
 
 export const handleGetComplaint = async (req: RequestGetComplaint, reply: FastifyReply) => {
 
-	
+
 	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
 
 		const complM: getComplaintMeth = req.query;
 
-		const response: complaint[]|"no perm"|  "The correct value is not presented " = await service_business.getInfoComplaint(complM,info_current_user.username, info_current_user.password, info_current_user.whoami);
+		const response: complaint[] | "no perm" | "The correct value is not presented " = await service_business.getInfoComplaint(complM, info_current_user.username, info_current_user.password, info_current_user.whoami);
 
-		
+
 		if (response === 'The correct value is not presented ') {
-			return  reply.code(400).send(response)
+			return reply.code(400).send(response)
 
 		} else if (response === "no perm") {
 			return reply.code(403).send("Dont`t have permissions")
@@ -335,7 +326,7 @@ export const handleGetComplaint = async (req: RequestGetComplaint, reply: Fastif
 	}
 	else {
 		return reply.code(500).send("Server Error")
-		
+
 	}
 
 
@@ -379,19 +370,19 @@ export const handlePostComplaint = async (req: RequestPostComplaint, reply: Fast
 
 
 
- }
+}
 
 
 
- export const handleUpdateComplaintStatus = async (req: RequestUpdateComplaint, reply: FastifyReply) => {
+export const handleUpdateComplaintStatus = async (req: RequestUpdateComplaint, reply: FastifyReply) => {
 
-   const dataForUpdateCompl: answerOnComplaint = reqUpdateComplaintValidator(req)
+	const dataForUpdateCompl: answerOnComplaint = reqUpdateComplaintValidator(req)
 
 
 	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
 
 
-		
+
 		await service_business.putComplaintStatus(req.body, info_current_user.username, info_current_user.password).then((response) => {
 
 
@@ -401,7 +392,7 @@ export const handlePostComplaint = async (req: RequestPostComplaint, reply: Fast
 
 	}
 	else {
-		reply = reply.code(400).send({
+		reply = reply.code(500).send({
 			problem: "oy no"
 		})
 		return reply
@@ -421,8 +412,8 @@ export const handleDeleteComplaint = async (req: RequestDeleteComplaint, reply: 
 		await service_business.deleteComplaint(req.body.complaint_id, info_current_user.username, info_current_user.password).then((response) => {
 
 			console.log("enter")
-				return reply.send(response+"\nyou deleted your beautifull complaint, dear " + info_current_user?.username).code(200);
-			
+			return reply.send(response + "\nyou deleted your beautifull complaint, dear " + info_current_user?.username).code(200);
+
 
 		})
 
@@ -444,8 +435,8 @@ export const handleDeleteProtocol = async (req: RequestDeleteProtocol, reply: Fa
 
 		await service_business.deleteProtocol(req.body.case_id, info_current_user.username, info_current_user.password).then((response) => {
 
-				return reply.send(response+"\nyou deleted your beautifull protocol, dear " + info_current_user?.username).code(200);
-			
+			return reply.send(response + "\nyou deleted your beautifull protocol, dear " + info_current_user?.username).code(200);
+
 
 		})
 
@@ -460,7 +451,71 @@ export const handleDeleteProtocol = async (req: RequestDeleteProtocol, reply: Fa
 
 };
 
+export const handleGetSumPersonFines = async (req: RequestPerson, reply: FastifyReply) => {
+
+
+	const passport_number: number | undefined = req.query.passport_number
+
+	console.log(passport_number)
+
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
+
+
+		if (passport_number !== undefined) {
+			const response = service_business.getSumPersonFines(passport_number, info_current_user.username, info_current_user.password)
+			if ((await response).count_fines_sum === undefined) {
+				console.log("in error")
+				reply = reply.code(500).send({
+					problem: "Server error"
+				})
+				return reply
+
+			} else {
+				if((await response).count_fines_sum === null){
+					(await response).count_fines_sum =0;
+				}
+
+				return response;
+			}
+		}
+	}
+	else {
+		reply = reply.code(500).send({
+			problem: "oy no"
+		})
+		return reply
+	}
+
+}
+
+
+
+
+
+export const handleGetInfoAboutUnseenComplaint = async (req: FastifyRequest, reply: FastifyReply) => {
+
+
+
+	if (info_current_user?.username !== undefined && info_current_user?.password !== undefined && info_current_user?.whoami !== undefined) {
+
+		const response = service_business.getInfoAboutUnseenComplaint(info_current_user.username, info_current_user.password)
+
+		return response
+
+	}
+	else {
+		reply = reply.code(500).send({
+			problem: "oy no"
+		})
+		return reply
+	}
+
+}
+
+
+
 export default {
+	handleGetSumPersonFines,
 	handleDeleteProtocol,
 	handleDeleteComplaint,
 	handleUpdateFineStatus,
@@ -474,5 +529,6 @@ export default {
 	handleDeleteAccConnection,
 	handleGetComplaint,
 	handlePostComplaint,
-	handleUpdateComplaintStatus
+	handleUpdateComplaintStatus,
+	handleGetInfoAboutUnseenComplaint
 }

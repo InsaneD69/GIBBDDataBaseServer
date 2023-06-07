@@ -1,42 +1,22 @@
 
-import { answerOnComplaint, articleInfo, dataAboutConnectedPerson, dataForAddPerson, dataForPayFine, getComplaintMeth, importantInfoAboutCar_plus_car_user, newComplaint, newProtocol, person, protocol } from './models';
-import { dbgetAcc_ToPerson, dbgetArticles, dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutComplaint, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle, dbgetInfoAboutProtocolFine } from '../db/api/select_data'
-import { article, articles, car_user, complaint, dbAnswerOnFinePay, fine, importantInfoAboutCar, infoAboutPerson, personToAccount, typeOfdbAnswerOnFinePay } from '../db/api/models/db_models';
-import { dbconnectionCitizenClient, dbconnectionPoliceman, dbconnectionPolicemanClient } from '../db/connect';
+import { answerOnComplaint, articleInfo, dataAboutConnectedPerson, dataForAddPerson, dataForPayFine, getComplaintMeth, importantInfoAboutCar_plus_car_user, newComplaint, newProtocol, person, protocol } from '../client_api/models/response_models';
+import { dbgetAcc_ToPerson, dbgetArticles, dbgetFinesSum, dbgetInfoAboutCarGOSNUMBER, dbgetInfoAboutCarVIN, dbgetInfoAboutCar_userVIN, dbgetInfoAboutComplaint, dbgetInfoAboutPerson, dbgetInfoAboutProtocol, dbgetInfoAboutProtocolArticle, dbgetInfoAboutProtocolFine, dbgetInfoAboutUnseenComplaint } from '../db/db_api/select_data'
+import { article, articles, car_user, complaint, dbAnswerOnFinePay, fine, importantInfoAboutCar, infoAboutPerson, personToAccount, sumFines, typeOfdbAnswerOnFinePay } from '../db/db_api/models/db_models';
+import { dbconnectionCitizenClient, dbconnectionPolicemanClient } from '../db/connect';
 import { Md5 } from 'ts-md5';
 import { Sequelize } from 'sequelize';
-import { dbCreateProtocol } from '../db/api/transactions';
-
-import { dbupdateComplaintStatus, dbupdateFineStatus } from '../db/api/update_data';
-import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount, dbDeleteComplaint, dbDeleteProtocol } from '../db/api/delete_data';
-import { dbpostNewComplaint, dbpostNewPersonToAccount } from '../db/api/insert_data';
-import { RequestUpdateComplaint } from '../client_api/request_type';
+import { dbCreateProtocol } from '../db/db_api/transactions';
+import { dbupdateComplaintStatus, dbupdateFineStatus } from '../db/db_api/update_data';
+import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount, dbDeleteComplaint, dbDeleteProtocol } from '../db/db_api/delete_data';
+import { dbpostNewComplaint, dbpostNewPersonToAccount } from '../db/db_api/insert_data';
 
 
-// export const getArticles = async (): Promise<article[]> => {
-// 	console.log("Im in service");
-// 	const response = await TESTgetAllFromArticle();
-
-// 	let resp_art: article[] = [];
-// 	response.forEach((elem) => {
-// 		console.log("asas")
-// 		console.log(elem.article_id)
-// 		resp_art.push({
-// 			article_id: elem.article_id,
-// 			description: elem.description,
-// 			price: { start: elem.price[0].value, end: elem.price[1].value }
-
-// 		})
-
-
-// 	});
 export const getArticles = async (username: string, password: string): Promise<Array<articleInfo>> => {
 	console.log("Im in service");
 
 	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
 	const response: article[] = await dbgetArticles(sequelize);
-	// console.log("get from select")
-	// console.log(response)
+
 	let resp_art: Array<articleInfo> = [];
 	response.forEach((elem) => {
 
@@ -75,21 +55,9 @@ export const getArticles = async (username: string, password: string): Promise<A
 		})
 	});
 
-
-	// console.log("resp_art")
-	// console.log(resp_art)
-
 	return resp_art
 }
 
-// 	return resp_art
-// }
-// export const getAllInfoAboutCamera = async (): Promise<any> => {
-// 	console.log("Im in service");
-// 	const response: camera[] = await dbgetInfoAboulAllCamera();
-
-// 	return response
-// }
 
 export const getInfoAboutCar = async (vin: string | undefined, number: string | undefined, region_code: number | undefined, username: string, password: string): Promise<"No" | importantInfoAboutCar_plus_car_user | null> => {
 
@@ -122,16 +90,18 @@ export const getInfoAboutCar = async (vin: string | undefined, number: string | 
 	return response
 }
 
-export const getInfoAboutPerson = async (passport_number: string | undefined, driver_license: string | undefined, username: string, password: string): Promise<any> => {
-	console.log("Im in service");
-
+export const getInfoAboutPerson = async (passport_number: number| undefined, driver_license: string | undefined, username: string, password: string): Promise<any> => {
+	
 	let response_person: infoAboutPerson[];
-
-
 
 	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
 
-	if ((passport_number === undefined || passport_number === null || passport_number === '') && driver_license !== undefined) {
+	console.log(passport_number)
+	console.log(typeof passport_number)
+    passport_number = Number(passport_number)
+	console.log(passport_number)
+
+	if ((passport_number === undefined || passport_number === 0) && driver_license !== undefined) {
 
 		response_person = await dbgetInfoAboutPerson(sequelize, driver_license, "driver_license");
 
@@ -317,9 +287,9 @@ export const getInfoComplaint = async (using_var:getComplaintMeth, username: str
 		return "no perm"
 	}
 
-	try{using_var.case_id = Number(using_var.case_id)}catch(err){}
-	try{using_var.passport_number= Number(using_var.passport_number)}catch(err){}
-	try{using_var.complaint_id= Number(using_var.complaint_id)}catch(err){}
+	using_var.case_id = Number(using_var.case_id)
+	using_var.passport_number= Number(using_var.passport_number)
+	using_var.complaint_id= Number(using_var.complaint_id)
 
 	if (typeof(using_var.case_id) === "number" && using_var.case_id > 0) {
 
@@ -405,25 +375,27 @@ export const deleteProtocol = async (case_id: number, username: string, password
 	
 }
 
-export const getSumPersonFines = async ( username: string, password: string): Promise<any> => {
+export const getSumPersonFines = async (passport_number: number,  username: string, password: string): Promise<sumFines> => {
 
 	const sequelize = new Sequelize(dbconnectionCitizenClient(username, Md5.hashStr(password)));
 
 
-	const response: personToAccount[] = await dbgetAcc_ToPerson(sequelize);
+	const response: sumFines[]= await dbgetFinesSum(sequelize,passport_number);
 
-
-	let answerWithLinkPerson: Array<dataAboutConnectedPerson> = [];
-	response.forEach((one_person)=>{
-		answerWithLinkPerson.push({
-			name: one_person.person_name,
-			surname: one_person.surname,
-			patronymic: one_person.patronymic,
-			passport_number: one_person.passport_number
-		})
-	})
 	
-	return answerWithLinkPerson;
+	return response[0];
+	
+}
+
+export const getInfoAboutUnseenComplaint = async (username: string, password: string): Promise<complaint[]> => {
+
+	const sequelize = new Sequelize(dbconnectionPolicemanClient(username, Md5.hashStr(password)));
+
+
+	const response: complaint[]= await dbgetInfoAboutUnseenComplaint(sequelize);
+
+	
+	return response;
 	
 }
 
@@ -442,5 +414,7 @@ export default {
 	deleteAccToPersonConnect,
 	getInfoLinkPerson,
 	getInfoComplaint,
-	putComplaintStatus
+	putComplaintStatus,
+	getSumPersonFines,
+	getInfoAboutUnseenComplaint 
 }

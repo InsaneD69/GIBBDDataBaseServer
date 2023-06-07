@@ -13,6 +13,7 @@
     "@fastify/jwt": "^7.0.0",
     "@nestjs/common": "^9.4.1",
     "@types/sequelize": "^4.28.15",
+    "crypt3-md5": "^1.1.1",
     "dotenv": "^16.0.3",
     "fastify": "^4.17.0",
     "pg": "^8.11.0",

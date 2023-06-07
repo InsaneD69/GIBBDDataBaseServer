@@ -1,5 +1,5 @@
-import { RequestPostComplaint, RequestPostProtocol, RequestProtocol, RequestUpdateComplaint } from "./client_api/request_type"
-import { answerOnComplaint, newComplaint, newProtocol } from "./services/models";
+import { RequestPostComplaint, RequestPostProtocol, RequestProtocol, RequestUpdateComplaint } from "./client_api/models/request_models"
+import { answerOnComplaint, newComplaint, newProtocol } from "./client_api/models/response_models";
 
 export function reqPostProtocolValidator(req: RequestPostProtocol): newProtocol {
 

@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import apiController from './client_api/api_controller'
 import tokenController, { tokenStore } from './client_api/token_controller'
 import accController from './client_api/account_controller'
-import { RequestWithToken } from "./client_api/request_type";
+import { RequestWithToken } from "./client_api/models/request_models";
 
 export class ErrorResponse extends Error {
 
@@ -19,16 +19,14 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 		try {
 
 			await request.jwtVerify();
-
 			console.log(request.headers.authorization);
 
-		
 			info_current_user = fastify.jwt.decode(request.headers.authorization.replace("Bearer ",''))
 			if(info_current_user?.whoami !== 'policeman'){
 				throw new ErrorResponse("You don't have enough rights", 401);
 			}
 
-			let cons: boolean = false;
+			let cons = false;
 
 			tokenStore.forEach((token) => {
 				console.log(token)
@@ -55,6 +53,7 @@ export const ApiPoliceRouter = async (fastify: FastifyInstance) => {
 		fastify.get("/protocol", apiController.handleGetProtocol),
 		fastify.get("/articles", apiController.handleGetArticle),
 		fastify.get("/complaint", apiController.handleGetComplaint),
+		fastify.get("/unseencomplaint", apiController.handleGetInfoAboutUnseenComplaint),
 
 		fastify.post("/protocol", apiController.handlePostProtocol),
 
@@ -78,20 +77,12 @@ export const ApiCitizenRouter = async (fastify: FastifyInstance) => {
 			if(info_current_user?.whoami !== 'citizen'){
 				throw new ErrorResponse("You don't have enough rights", 401);
 			}
-
-			let cons: boolean = false;
-
-			tokenStore.forEach((token) => {
-				console.log(token)
-				if (token === request.headers.authorization) {
-					cons = true;
-				}
-			});
-			
 		
-			if (!cons) {
+			if (!tokenStore.has(info_current_user.username)) {
 				throw new ErrorResponse("Not valid token", 401);
 				
+			} else if (tokenStore.get(info_current_user.username) ! == request.headers.authorization){
+				throw new ErrorResponse("Not valid token", 401);
 			}
 			
 
@@ -105,6 +96,7 @@ export const ApiCitizenRouter = async (fastify: FastifyInstance) => {
 	fastify.get("/protocol", apiController.handleGetProtocol),
 	fastify.get("/person", apiController.handleGetAccConnection),
 	fastify.get("/complaint", apiController.handleGetComplaint),
+	fastify.get("/sumfine", apiController.handleGetSumPersonFines),
 
 	fastify.put("/payfine", apiController.handleUpdateFineStatus),
 
@@ -130,18 +122,10 @@ export const ApiAdministratorRouter = async (fastify: FastifyInstance) => {
 			if(info_current_user?.whoami !== 'administrator'){
 				throw new ErrorResponse("You don't have enough rights", 401);
 			}
-
-			let cons: boolean = false;
-
-			tokenStore.forEach((token) => {
-				console.log(token)
-				if (token === request.headers.authorization) {
-					cons = true;
-				}
-			});
-			
-		
-			if (!cons) {
+			if (!tokenStore.has(info_current_user.username)) {
+				throw new ErrorResponse("Not valid token", 401);
+				
+			} else if (tokenStore.get(info_current_user.username) ! == request.headers.authorization){
 				throw new ErrorResponse("Not valid token", 401);
 			}
 			
@@ -169,33 +153,33 @@ export const AccountRouter = async (fastify: FastifyInstance) => {
 			
 			await request.jwtVerify();
 
-			let cons: boolean = false;
+			let cons = false;
 			info_current_user = fastify.jwt.decode(request.headers.authorization.replace("Bearer ",''))
-			tokenStore.forEach((token, _username) => {
-				console.log(token)
-				if (token === request.headers.authorization) {
-					cons = true;
-				}
-			});
+
+			if(info_current_user?.whoami !== undefined){
+
 			
-		
-			if (!cons) {
+				if (!tokenStore.has(info_current_user.username)) {
+					throw new ErrorResponse("Not valid token", 401);
+					
+				} else if (tokenStore.get(info_current_user.username) ! == request.headers.authorization){
+					throw new ErrorResponse("Not valid token", 401);
+				}
+			
+			}
+			else {
 				throw new ErrorResponse("Not valid token", 401);
 			}
-			
-
 		} catch (err) {
-			reply.send(err)
+			reply.code(401).send(err)
 		}
 	}
 	}),
 
-	
 	fastify.post("/citizen",accController.handleRegisterCitizen),
 	fastify.post("/logout",accController.handleLogout),
 	fastify.delete("/citizen",accController.handleDeleteCitizen);
 	
-
 };
 
 export const AuthRouter = async (fastify: FastifyInstance) => {

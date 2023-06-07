@@ -1,5 +1,5 @@
 import { QueryTypes, Sequelize } from "sequelize";
-import { newComplaint, newProtocol } from "../../services/models";
+import { newComplaint, newProtocol } from "../../client_api/models/response_models";
 
 
 export async function dbpostNewCitizen(sequelize: Sequelize, username: string, password: string, email: string, phone_number: number) {

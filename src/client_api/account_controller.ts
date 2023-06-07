@@ -1,5 +1,5 @@
 import { FastifyReply } from "fastify";
-import { RequestDeleteCitizen, RequestRegistrationCitizen, RequestToken } from "./request_type";
+import { RequestDeleteCitizen, RequestRegistrationCitizen, RequestToken } from "./models/request_models";
 import { tokenStore } from "./token_controller";
 import { info_current_user } from "../route";
 import  service_account  from "../services/service_account";

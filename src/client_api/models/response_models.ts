@@ -1,6 +1,6 @@
 //type selectReq = {column:string[],table:string[]}
 
-import { articles, car_user, fine, importantInfoAboutCar } from "../db/api/models/db_models"
+import { articles, car_user, fine, importantInfoAboutCar } from "../../db/db_api/models/db_models"
 
 export type area = {
     area_id: string,

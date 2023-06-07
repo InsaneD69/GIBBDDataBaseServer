@@ -1,5 +1,5 @@
 import { QueryTypes, Sequelize } from "sequelize";
-import { newProtocol, protocol } from "../../services/models";
+import { newProtocol, protocol } from "../../client_api/models/response_models";
 
 export async function dbCreateProtocol(sequelize: Sequelize, protocol: newProtocol) {
 
@@ -59,7 +59,7 @@ export async function dbCreateProtocol(sequelize: Sequelize, protocol: newProtoc
                 return 'error';
 
             }
-        };
+        }
 
         for (const one_fine of protocol.fines) {
 

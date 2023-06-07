@@ -1,7 +1,5 @@
 node_modules
-.env# Ignore self-signed certificates created by mkcert
- /ssl/server.crt
-/ssl/server.key
-# Ignore self-signed certificates created by mkcert
- /ssl/server.crt
-/ssl/server.key
+.env
+/https/server.crt
+/https/server.key
+

@@ -1,28 +1,8 @@
 
 import { QueryTypes, Sequelize } from 'sequelize';
-import { article, articles, car_user,  complaint,  fine,  importantInfoAboutCar, infoAboutPerson, personToAccount } from "./models/db_models"
-import { protocol } from '../../services/models';
-import { dbconnectionPoliceman } from '../connect';
+import { article, articles, car_user,  complaint,  fine,  importantInfoAboutCar, infoAboutPerson, personToAccount, sumFines } from "./models/db_models"
+import { protocol } from '../../client_api/models/response_models';
 
-
-// export async function dbgetInfoAboulAllCamera(){
-
-//     console.log("Im in reqtodb")
-//     const sequelize = new Sequelize(dbconnectionAdmin);
-
-//     const response: camera[] = await sequelize.query(
-//         'SELECT camera.camera_id, camera.certificate, area.area_name'+ 
-//         ' FROM camera'+
-//         ' join area on area.area_id = camera.area_id',{
-//             type: QueryTypes.SELECT
-//         }
-
-//     )
-
-//     console.log(response)
-
-//     return response;
-// }
 
 export async function dbgetInfoAboutCarVIN(sequelize: Sequelize, vin: string) {
 
@@ -35,7 +15,10 @@ export async function dbgetInfoAboutCarVIN(sequelize: Sequelize, vin: string) {
         ' join gosnumber on gosnumber.vin = car.vin' +
         ' join sts on car.sts_num = sts.sts_id' +
         ' join person on person.passport_number = sts.passport_number' +
-        ' WHERE car.vin = \'' + vin + "\'", {
+        ' WHERE car.vin = :vin', {
+            replacements:{
+                vin: vin
+            },
             type: QueryTypes.SELECT
         }
     )
@@ -55,9 +38,12 @@ export async function dbgetInfoAboutCarGOSNUMBER(sequelize: Sequelize, number: s
         ' join gosnumber on gosnumber.vin = car.vin' +
         ' join sts on car.sts_num = sts.sts_id' +
         ' join person on person.passport_number = sts.passport_number' +
-        ' WHERE gosnumber.number = \'' + number + "\'" +
-        ' AND gosnumber.region_code = \'' + region_code + "\'", {
-        type: QueryTypes.SELECT
+        ' WHERE gosnumber.number = :number' +
+        ' AND gosnumber.region_code = :region_code', {
+            replacements:{
+                number: number,
+                region_code: region_code
+            }, type: QueryTypes.SELECT
     }
 
     )
@@ -75,8 +61,10 @@ export async function dbgetInfoAboutCar_userVIN(sequelize: Sequelize, vin: strin
         ' car_user.license_number' +
         ' FROM car_user' +
         ' join person on person.driver_license = car_user.license_number ' +
-        'WHERE car_user.vin = \'' + vin + '\'', {
-        type: QueryTypes.SELECT
+        'WHERE car_user.vin = :vin', {
+            replacements:{
+                vin: vin
+            }, type: QueryTypes.SELECT
     }
 
     )
@@ -87,7 +75,7 @@ export async function dbgetInfoAboutCar_userVIN(sequelize: Sequelize, vin: strin
 }
 
 
-export async function dbgetInfoAboutPerson(sequelize: Sequelize, findVar: string, whoIs: "passport_number" | "driver_license") {
+export async function dbgetInfoAboutPerson(sequelize: Sequelize, findVar: string| number, whoIs: "passport_number" | "driver_license") {
 
     const response: infoAboutPerson[] = await sequelize.query(
         'SELECT person.passport_number ,person.driver_license,driver_license.date_of_issue,' +
@@ -96,7 +84,10 @@ export async function dbgetInfoAboutPerson(sequelize: Sequelize, findVar: string
         ' FROM person' +
         ' join passport using(passport_number) ' +
         ' join driver_license on person.driver_license = driver_license.license_number  ' +
-        'WHERE person.' + whoIs + ' = \'' + findVar + '\'', {
+        'WHERE person.' + whoIs + ' = :var', {
+            replacements:{
+                var: findVar
+            },
         type: QueryTypes.SELECT
     }
 
@@ -157,7 +148,7 @@ export async function dbgetInfoAboutProtocolArticle(sequelize: Sequelize, case_i
     )
    
     return response;
-};
+}
 
 export async function dbgetInfoAboutProtocolFine(sequelize: Sequelize, case_id: number) {
 
@@ -176,7 +167,7 @@ export async function dbgetInfoAboutProtocolFine(sequelize: Sequelize, case_id: 
     
    
     return response;
-};
+}
 
 export async function dbCheckUser(sequelize: Sequelize, username: string) {
 
@@ -280,7 +271,6 @@ export async function dbgetInfoAboutComplaint(sequelize: Sequelize, using_var: n
 
         
     )
-    console.log("oerwoer");
     
     return response;
 }
@@ -288,13 +278,35 @@ export async function dbgetInfoAboutComplaint(sequelize: Sequelize, using_var: n
 
 export async function dbgetFinesSum(sequelize: Sequelize, passport_number: number) {
     
-    const response:any =  await sequelize.query(
+    const response:sumFines[] =  await sequelize.query(
         'Select count_fines_sum(:passport_number) ',
         {
         replacements: { 
             passport_number: passport_number
         },
         type: QueryTypes.SELECT
+        } 
+
+    );
+
+    console.log(response)
+
+
+    return response;
+}
+
+
+export async function dbgetInfoAboutUnseenComplaint(sequelize: Sequelize) {
+    
+    const response:complaint[]=  await sequelize.query(
+        // 'SELECT  complaint.complaint_id, complaint.case_id, complaint.passport_number, ' +
+        // 'complaint.date_of_submission, complaint.date_of_review, complaint.verdict, complaint.full_justification, complaint.was_a_driver, complaint.reason_text, complaint.verdict_boolean, protocol.case_reason ' +
+        // ' FROM complaint ' +
+        // ' join protocol using(case_id) ' +
+        // ' where date_of_review is null ',
+        'SELECT * from get_unseen_complaints',
+        {
+            type: QueryTypes.SELECT
         } 
 
     );

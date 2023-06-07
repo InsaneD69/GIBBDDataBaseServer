@@ -120,3 +120,7 @@ export type complaint = {
     case_reason: string
 
 }
+export type sumFines = {
+    count_fines_sum: number
+
+}

@@ -1,8 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { RequestToken } from "./request_type";
+import { RequestToken } from "./models/request_models";
 import fastify from "../app";
 import { info_current_user } from "../route";
-import { testCredentialsToDB } from "../db/api/test_connection";
+import { testCredentialsToDB } from "../db/db_api/test_connection";
 
 export let tokenStore = new Map<string, string>();
 
@@ -62,8 +62,6 @@ export const handleGetTokenC = async (req: RequestToken, reply: FastifyReply) =>
         return reply
     }
 
-
-
     const token = fastify.jwt.sign({
         username: username,
         password: password,
@@ -87,12 +85,10 @@ export const handleGetTokenA = async (req: RequestToken, reply: FastifyReply) =>
 
         const response: string = await testCredentialsToDB(info_current_user.username, info_current_user.password, info_current_user.whoami)
         console.log("ApiContr")
-        console.log(response)
         if(response !== info_current_user.username){
-            reply = reply.code(401).send({
+            return reply.code(401).send({
                 problem: "Not correct auth data"
             })
-            return reply
         }
         
         
