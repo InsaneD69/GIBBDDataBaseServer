@@ -3,7 +3,7 @@ import { dbconnectionCitizen, dbconnectionCitizenClient } from "../db/connect";
 
 import { dbCheckEmail, dbCheckPhone, dbCheckUser } from "../db/db_api/select_data";
 import { dbpostNewCitizen } from "../db/db_api/insert_data";
-import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount } from "../db/db_api/delete_data";
+import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount } from "../db/db_api/models/delete_data";
 import { Md5 } from "ts-md5";
 
 

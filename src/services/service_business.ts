@@ -7,7 +7,7 @@ import { Md5 } from 'ts-md5';
 import { Sequelize } from 'sequelize';
 import { dbCreateProtocol } from '../db/db_api/transactions';
 import { dbupdateComplaintStatus, dbupdateFineStatus } from '../db/db_api/update_data';
-import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount, dbDeleteComplaint, dbDeleteProtocol } from '../db/db_api/delete_data';
+import { dbDeleteAccToPersonConnect, dbDeleteCitizenAccount, dbDeleteComplaint, dbDeleteProtocol } from '../db/db_api/models/delete_data';
 import { dbpostNewComplaint, dbpostNewPersonToAccount } from '../db/db_api/insert_data';
 
 
